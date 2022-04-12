@@ -57,38 +57,40 @@ export default {
     },
     login() {
       this.loginLoading = true
-      this.$refs.loginFormRef.validate(valid => {
-        if (!valid) {
-              return (this.loginLoading = false)
-            }
-        if(this.loginForm.username!=="admin" || this.loginForm.password !== "123456"){
-          this.loginLoading = false
-          return this.$message.error('登录失败 帐号或密码错误!')
-        }
-        this.$message.success('登录成功!')
-        window.sessionStorage.setItem('token', "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjUwMCwicmlkIjowLCJpYXQiOjE2NDk3NDU0MjYsImV4cCI6MTY0OTgzMTgyNn0.uJztKVftIe6IiMcj5uEkW135S5pDSxxF_XEL_VZbHBo")
-        //编程式导航实现页面跳转
-        this.$router.push('/home')
-        this.loginLoading = false
-      })
-      // this.$refs.loginFormRef.validate(async valid => {
+      //假的
+      // this.$refs.loginFormRef.validate(valid => {
       //   if (!valid) {
-      //     return (this.loginLoading = false)
-      //   }
-      //   const { data: res } = await this.$http.post('login', this.loginForm)
-      //   if (res.meta.status !== 200) {
+      //         return (this.loginLoading = false)
+      //       }
+      //   if(this.loginForm.username!=="admin" || this.loginForm.password !== "123456"){
       //     this.loginLoading = false
       //     return this.$message.error('登录失败 帐号或密码错误!')
       //   }
       //   this.$message.success('登录成功!')
-      //   // 1. 将登录成功之后的 token,保存到客户端的 sessionStorage(会话机制/只在当前页面生效)中 localStorage(持久话机制/关闭页面也不会忘记数据)
-      //   //   1.1 项目中除了登录之外的API接口,必须在登录之后才能访问
-      //   //   1.2 token 只应在当前网站打开期间生效, 所以将 token 保存在 sessionStorage中
-      //   window.sessionStorage.setItem('token', res.data.token)
-      //   // 2. 通过编程式路由导航跳转到后台主页,路由地址是 /home
+      //   window.sessionStorage.setItem('token', "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjUwMCwicmlkIjowLCJpYXQiOjE2NDk3NDU0MjYsImV4cCI6MTY0OTgzMTgyNn0.uJztKVftIe6IiMcj5uEkW135S5pDSxxF_XEL_VZbHBo")
+      //   //编程式导航实现页面跳转
       //   this.$router.push('/home')
       //   this.loginLoading = false
       // })
+      //真正请求后端
+      this.$refs.loginFormRef.validate(async valid => {
+        if (!valid) {
+          return (this.loginLoading = false)
+        }
+        const { data: res } = await this.$http.post('login', this.loginForm)
+        if (res.meta.status !== 200) {
+          this.loginLoading = false
+          return this.$message.error('登录失败 帐号或密码错误!')
+        }
+        this.$message.success('登录成功!')
+        // 1. 将登录成功之后的 token,保存到客户端的 sessionStorage(会话机制/只在当前页面生效)中 localStorage(持久话机制/关闭页面也不会忘记数据)
+        //   1.1 项目中除了登录之外的API接口,必须在登录之后才能访问
+        //   1.2 token 只应在当前网站打开期间生效, 所以将 token 保存在 sessionStorage中
+        window.sessionStorage.setItem('token', res.data.token)
+        // 2. 通过编程式路由导航跳转到后台主页,路由地址是 /home
+        await this.$router.push('/home')
+        this.loginLoading = false
+      })
     }
   }
 }
