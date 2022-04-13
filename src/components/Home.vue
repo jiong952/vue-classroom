@@ -61,49 +61,73 @@ export default {
       menuList: [
         {
           "id": 101,
-          "authName": "用户管理",
-          "path": "users",
+          "authName": "校区管理",
+          "path": "campus",
           "children": [
             {
               "id": 1001,
-              "authName": "用户列表",
-              "path": "users"
+              "authName": "校区列表",
+              "path": "campus"
             }
           ]
         },
         {
           "id": 102,
-          "authName": "权限管理",
-          "path": "rights",
+          "authName": "楼宇管理",
+          "path": "buildings",
           "children": [
             {
               "id": 1002,
-              "authName": "权限列表",
-              "path": "rights"
+              "authName": "楼宇列表",
+              "path": "buildings"
             }
           ]
         },
         {
           "id": 103,
           "authName": "教室管理",
-          "path": "classroom",
+          "path": "classrooms",
           "children": [
             {
               "id": 1003,
               "authName": "教室列表",
-              "path": "classroom"
+              "path": "classrooms"
             }
           ]
         },
+        {
+          "id": 104,
+          "authName": "设备管理",
+          "path": "devices",
+          "children": [
+            {
+              "id": 1004,
+              "authName": "设备列表",
+              "path": "devices"
+            }
+          ]
+        },
+        {
+          "id": 105,
+          "authName": "用户管理",
+          "path": "users",
+          "children": [
+            {
+              "id": 1005,
+              "authName": "用户列表",
+              "path": "users"
+            }
+          ]
+        }
       ],
       iconsObj: {
         // 一级菜单的icon图标
-        147: 'el-icon-magic-stick',
-        125: 'iconfont icon-users',
+        101: 'el-icon-magic-stick',
+        102: 'iconfont icon-users',
         103: 'iconfont icon-tijikongjian',
-        101: 'iconfont icon-shangpin',
-        102: 'iconfont icon-danju',
-        145: 'iconfont icon-baobiao'
+        104: 'iconfont icon-shangpin',
+        105: 'iconfont icon-danju',
+        106: 'iconfont icon-baobiao'
       },
       isCollapse: false, // 是否折叠属性
       activePath: '', //当前页面的激活菜单路径
@@ -186,6 +210,7 @@ export default {
       width: 60px;
       height: 60px;
       border-radius: 50%;
+      margin-left: 10px;
     }
     span {
       margin-left: 15px;

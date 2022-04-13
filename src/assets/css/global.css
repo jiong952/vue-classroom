@@ -9,7 +9,6 @@ body,
 /*面包屑导航栏*/
 .el-breadcrumb {
   margin-bottom: 15px;
-  font-size: 12px;
 }
 /*卡片视图区域*/
 .el-card {

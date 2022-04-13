@@ -6,6 +6,9 @@ import Welcome from "@/components/Welcome";
 import User from "@/components/users/User";
 import Right from "@/components/rights/Right";
 import Classroom from "@/components/classroom/Classroom";
+import Devices from "@/components/devices/Devices";
+import Campus from "@/components/campus/Campus";
+import Building from "@/components/building/Building";
 Vue.use(VueRouter)
 
 const routes = [
@@ -32,12 +35,20 @@ const routes = [
         component: User
       },
       {
-        path: '/rights',
-        component: Right
+        path: '/classrooms',
+        component: Classroom
       },
       {
-        path: '/classroom',
-        component: Classroom
+        path: '/devices',
+        component: Devices
+      },
+      {
+        path: '/campus',
+        component: Campus
+      },
+      {
+        path: '/buildings',
+        component: Building
       },
     ]
   }
