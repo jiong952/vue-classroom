@@ -19,6 +19,12 @@
         <el-col :span="4">
           <el-button type="primary">查询</el-button>
         </el-col>
+        <el-col :span="4">
+          <el-button type="primary" @click="request(1)">请求</el-button>
+        </el-col>
+        <el-col :span="4">
+          <el-button type="primary" @click="send">发送</el-button>
+        </el-col>
       </el-row>
       <!-- 教室数据区域 -->
       <el-table :data="classroomData.classroomList" stripe style="width: 100%" border>
@@ -34,7 +40,8 @@
         </el-table-column>
         <el-table-column label="智能模式">
           <template v-slot="scope">
-            <el-switch v-model="scope.row.state.web_state.web_ctrl" active-color="#13ce66" inactive-color="#ff4949"> </el-switch>
+            {{scope.row.state.web_state.web_ctrl}}
+            <el-switch v-model="scope.row.state.web_state.web_ctrl" active-color="#13ce66" inactive-color="#ff4949" @change="switchChange($event)"> </el-switch>
           </template>
         </el-table-column>
         <el-table-column prop="adminName" label="管理员"></el-table-column>
@@ -55,6 +62,7 @@
           </template>
         </el-table-column>
       </el-table>
+<!--      已废弃-->
       <el-dialog
           :visible.sync="showClassroomSate"
           width="15%"
@@ -81,8 +89,7 @@
       >
       </el-pagination>
     </el-card>
-    <el-button type="primary" @click="request(1)">请求</el-button>
-    <el-button type="primary" @click="send">发送</el-button>
+
   </div>
 </template>
 
@@ -91,7 +98,17 @@ import Breadcrumb from "@/components/breadcrumb/Breadcrumb";
 export default {
   name: "Classroom",
   methods: {
+    switchChange(val) {
+      console.log(val)
+      console.log(this.$data.state)
+      this.state.web_state.web_ctrl = !val;
+      console.log("web的状态");
+      console.log(this.state.web_state);
+      this.send()
+    },
     getClassroomList(){
+      console.log(this)
+      console.log("获取")
       this.$message.success('获取楼宇列表成功!')
     },
     //测试方法
@@ -120,31 +137,34 @@ export default {
       this.getUserList()
     },
     //接受后端数据
-    async request(id){
-      var url = this.HOME + '/web_get_state';
+    async request(){
+      console.log("测试")
+      console.log(this.state)
+      const url = this.HOME + '/web_get_state';
       await this.$axios({  //this代表vue对象，之前在入口文件中把axios挂载到了vue中，所以这里直接用this.$axios调用axios对象
         method: 'post',
         url: url,
       }).then(response => (
           // console.log(response.data)
           //修改对应教室的状态
-          this.classroomData.classroomList[id].state = response.data
+          this.state = response.data
       )).catch(function (err) {
         console.log(err);
       })
       console.log("打印状态")
-      console.log(this.classroomData.classroomList[id].state.web_state.web_ctrl)
+      console.log(this.state.web_state.web_ctrl)
       console.log("打印人数")
-      console.log(this.classroomData.classroomList[id].state.deep_state.have_person.person_nums)
+      console.log(this.state.deep_state.have_person.person_nums)
     },
     //发送后端数据
-    send(){
-      this.state_s.web_state = this.state.web_state;
-      var url = this.HOME + '/web_state';
-      this.$axios({  //this代表vue对象，之前在入口文件中把axios挂载到了vue中，所以这里直接用this.$axios调用axios对象
+    async send(){
+      this.$data.state_s.web_state = this.$data.state.web_state;
+      console.log(this.state)
+      const url = this.HOME + '/web_state';
+      await this.$axios({  //this代表vue对象，之前在入口文件中把axios挂载到了vue中，所以这里直接用this.$axios调用axios对象
         method: 'post',
         url: url,
-        data:this.state_s
+        data:this.$data.state_s
       }).then(function (res) {
         console.log(res);
       }).catch(function (err) {
@@ -155,7 +175,7 @@ export default {
   },
   //定时器更新state
   async mounted() {
-    // this.state = setInterval(()=>this.request(), 1000);
+    setInterval(()=>this.request(), 1000);
   },
   data(){
     return{
@@ -171,7 +191,7 @@ export default {
         // 当前的页数
         pagenum: 1,
         // 当前每次显示多少条数据
-        pagesize: 6
+        pagesize: 5
       },
       //校区选项
       campusValue: '',
@@ -365,11 +385,12 @@ export default {
               }
             },
           },
+            //第二个是测试的教室
           {
             "id": 2,
             "campusName": "大学城校区",
             "buildingName": "教学二号楼",
-            "classroomName":"教2-201",
+            "classroomName":"教2-202",
             "empty_state": "not_empty",
             "auto_state": true, //true时为智能模式
             "adminName":"洪俊章",
@@ -377,23 +398,26 @@ export default {
             "create_time": "2017-11-09T20:36:26.000Z",
             "state": {
               //湿度
-              Humidity: 3,
+              Humidity: 11,
               //温度
-              Temperature: 3,
+              Temperature: 11,
               //火灾
               fire_state: "safe",
               //火灾
               smoke_state: "safe",
               //深度学习状态
-              "deep_state": {
+              deep_state: {
                 have_person: {
-                  person_nums: 0,
-                  area_1: -1,
+                  //教室人数
+                  person_nums: 3,
+                  //1区域有没有人
+                  area_1: 3,
                   area_2: -1,
                   area_3: -1,
                   area_4: -1
                 },
                 person_state: {
+                  //人物状态
                   person_1: 0,
                   person_2: 0,
                   person_3: 0,
@@ -401,15 +425,18 @@ export default {
                 }
               },
               web_state: {
+                //为0表示智能模式，为1表示网页控制
                 web_ctrl: true,
                 ctrl_state: {
                   light_state: {
-                    light_1: -1,
-                    light_2: -1,
-                    light_3: -1,
-                    light_4: -1
+                    //灯的状态
+                    light_1: 1,
+                    light_2: 1,
+                    light_3: 1,
+                    light_4: 1
                   },
-                  fan_state: -1
+                  //风扇状态
+                  fan_state: 1
                 }
               }
             },
@@ -418,7 +445,7 @@ export default {
             "id": 3,
             "campusName": "大学城校区",
             "buildingName": "教学二号楼",
-            "classroomName":"教2-201",
+            "classroomName":"教2-203",
             "empty_state": "empty",
             "auto_state": true, //true时为智能模式
             "adminName":"洪俊章",
@@ -467,7 +494,7 @@ export default {
             "id": 4,
             "campusName": "大学城校区",
             "buildingName": "教学二号楼",
-            "classroomName":"教2-201",
+            "classroomName":"教2-204",
             "empty_state": "empty",
             "auto_state": true, //true时为智能模式
             "adminName":"洪俊章",
@@ -516,7 +543,7 @@ export default {
             "id": 5,
             "campusName": "大学城校区",
             "buildingName": "教学二号楼",
-            "classroomName":"教2-201",
+            "classroomName":"教2-205",
             "empty_state": "empty",
             "auto_state": true, //true时为智能模式
             "adminName":"洪俊章",
@@ -561,67 +588,18 @@ export default {
               }
             },
           },
-          {
-            "id": 6,
-            "campusName": "大学城校区",
-            "buildingName": "教学二号楼",
-            "classroomName":"教2-201",
-            "empty_state": "empty",
-            "auto_state": true , //true时为智能模式
-            "adminName":"洪俊章",
-            "address": "https://myblogimgbed.oss-cn-shenzhen.aliyuncs.com/img/empty.png",
-            "create_time": "2017-11-09T20:36:26.000Z",
-            "state": {
-              //湿度
-              Humidity: 3,
-              //温度
-              Temperature: 3,
-              //火灾
-              fire_state: "safe",
-              //火灾
-              smoke_state: "safe",
-              //深度学习状态
-              "deep_state": {
-                have_person: {
-                  person_nums: 0,
-                  area_1: 3,
-                  area_2: 0,
-                  area_3: 0,
-                  area_4: 0
-                },
-                person_state: {
-                  person_1: 0,
-                  person_2: 0,
-                  person_3: 0,
-                  person_4: 0
-                }
-              },
-              web_state: {
-                web_ctrl: 0,
-                ctrl_state: {
-                  light_state: {
-                    light_1: 0,
-                    light_2: 0,
-                    light_3: 0,
-                    light_4: 0
-                  },
-                  fan_state: 0
-                }
-              }
-            },
-          },
 
         ],
-        total: 6
+        total: 5
       }
       }
     },
   //初始化刷新，此处刷新第二个，写后端应该根据pageSize，pageNum请求到教室id封装List然后通过request来请求State进行封装classroomData
   async created() {
+      console.log(this.$data.state)
       this.getClassroomList();
       console.log("初始化")
-      await this.request(1)
-      console.log(this.classroomData.classroomList[1].state)
+      await this.request()
      },
   components: {
     //面包屑组件

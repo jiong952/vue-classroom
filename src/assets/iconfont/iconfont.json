@@ -6,6 +6,41 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1304896",
+      "name": "用户",
+      "font_class": "yonghu",
+      "unicode": "e624",
+      "unicode_decimal": 58916
+    },
+    {
+      "icon_id": "6729608",
+      "name": "校区管理",
+      "font_class": "xiaoquguanli",
+      "unicode": "e60a",
+      "unicode_decimal": 58890
+    },
+    {
+      "icon_id": "10017847",
+      "name": "设备",
+      "font_class": "shebei",
+      "unicode": "e62a",
+      "unicode_decimal": 58922
+    },
+    {
+      "icon_id": "12394046",
+      "name": "教室",
+      "font_class": "jiaoshi",
+      "unicode": "e622",
+      "unicode_decimal": 58914
+    },
+    {
+      "icon_id": "16290368",
+      "name": "楼宇数",
+      "font_class": "louyushu",
+      "unicode": "e626",
+      "unicode_decimal": 58918
+    },
+    {
       "icon_id": "2376811",
       "name": "室温",
       "font_class": "shiwen",

@@ -53,6 +53,7 @@
 </template>
 
 <script>
+import * as echarts from 'echarts'
 export default {
   name: "Home.vue",
   data() {
@@ -122,11 +123,11 @@ export default {
       ],
       iconsObj: {
         // 一级菜单的icon图标
-        101: 'el-icon-magic-stick',
-        102: 'iconfont icon-users',
-        103: 'iconfont icon-tijikongjian',
-        104: 'iconfont icon-shangpin',
-        105: 'iconfont icon-danju',
+        101: 'iconfont icon-xiaoquguanli',
+        102: 'iconfont icon-louyushu',
+        103: 'iconfont icon-jiaoshi',
+        104: 'iconfont icon-shebei',
+        105: 'iconfont icon-yonghu',
         106: 'iconfont icon-baobiao'
       },
       isCollapse: false, // 是否折叠属性

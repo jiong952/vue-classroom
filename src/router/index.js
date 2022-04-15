@@ -10,6 +10,7 @@ import Devices from "@/components/devices/Devices";
 import Campus from "@/components/campus/Campus";
 import Building from "@/components/building/Building";
 import Detail from "@/components/classroom/Detail";
+import Echarts from "@/components/Echarts";
 Vue.use(VueRouter)
 
 const routes = [
@@ -54,6 +55,10 @@ const routes = [
       {
         path: '/detail',
         component: Detail
+      },
+      {
+        path: '/echarts',
+        component: Echarts
       },
 
     ]

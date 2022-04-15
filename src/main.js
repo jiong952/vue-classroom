@@ -5,6 +5,10 @@ import './plugins/element.js'
 // 导入字体图标
 import './assets/fonts/iconfont.css'
 import './assets/iconfont/iconfont.css'
+// 引入echarts
+import * as echarts from 'echarts'
+Vue.prototype.$echarts = echarts
+
 // 导入全局样式表
 import './assets/css/global.css'
 import axios from 'axios'

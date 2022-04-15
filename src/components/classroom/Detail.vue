@@ -1,10 +1,10 @@
 <template>
   <div class="box">
-    <el-row :gutter="30">
-      <el-col :span="12">
+    <el-row :gutter="10">
+      <el-col :span="11">
         <div>
           <!--动态将图片轮播图的容器高度设置成与图片一致-->
-          <el-carousel class="banner" height="534px">
+          <el-carousel class="banner" height="550px">
             <!--遍历图片地址,动态生成轮播图-->
             <el-carousel-item v-for="item in img_list" :key="item">
               <img :src="item" alt />
@@ -12,49 +12,74 @@
           </el-carousel>
         </div>
       </el-col>
-      <el-col :span="12">
+      <el-col :span="13">
         <div>
           <!--信息显示区域-->
           <el-card class="content">
             <el-row :gutter="30">
+              <!--echarts图表-->
+              <el-col :span="24" style="padding-left: 0;padding-right: 0">
+                <!-- 为 ECharts 准备一个定义了宽高的 DOM -->
+                <div id="main" style="width: 520px;height:250px;"></div>
+              </el-col>
+              <!--教室设备使用情况-->
               <el-col :span="24">
-                <el-descriptions class="descriptions" title="教室信息" :column="2" style="font-size: large" border size="mini">
-                  <el-descriptions-item span="1">
-                    <template slot="label">
+                <el-descriptions class="descriptions" :column="4" border size="mini">
+                  <!--温度湿度-->
+                  <el-descriptions-item span="2">
+                    <template slot="label" style="font-size: large">
                       <i class="iconfont icon-shidu" style="color: #2381BF"></i>
                       湿度
                     </template>
                     {{this.state.Humidity}}
                   </el-descriptions-item>
-                  <el-descriptions-item span="1">
+                  <el-descriptions-item span="2">
                     <template slot="label">
                       <i class="iconfont icon-shiwen"></i>
                       温度
                     </template>
                     {{this.state.Temperature}}
                   </el-descriptions-item>
-                  <el-descriptions-item span="1">
+                  <!--火灾烟雾情况-->
+                  <el-descriptions-item span="2">
                     <template slot="label">
                       <i class="iconfont icon-huozaishigu" style="color:#D90C0C;"></i>
                       火灾情况
                     </template>
-                    {{this.state.fire_state === "safe" ? "安全":"火灾发生" }}
+                    <el-tag size="mini"
+                            :type="this.state.fire_state === ('safe') ? 'success':'danger'">{{this.state.fire_state === ('safe') ? "安全":"火灾危害"}}</el-tag>
                   </el-descriptions-item>
-                  <el-descriptions-item span="1">
+                  <el-descriptions-item span="2">
                     <template slot="label">
                       <i class="iconfont icon-yanwu"></i>
                       烟雾情况
                     </template>
-                    {{this.state.smoke_state === "safe" ? "安全":"烟雾危害"}}
+                    <el-tag size="mini"
+                            :type="this.state.smoke_state === ('safe') ? 'success':'danger'">{{this.state.smoke_state === ('safe') ? "安全":"烟雾危害"}}</el-tag>
                   </el-descriptions-item>
-                  <el-descriptions-item span="1">
+                  <!--教室总人数以及智能模式情况-->
+                  <el-descriptions-item span="2">
                     <template slot="label">
                       <i class="iconfont icon-zongrenshu"></i>
                       教室总人数
                     </template>
                     {{this.state.deep_state.have_person.person_nums}}
                   </el-descriptions-item>
-                  <el-descriptions-item span="1">
+                  <el-descriptions-item span="2">
+                    <template slot="label">
+                      <i class="iconfont icon-zongrenshu"></i>
+                      智能模式
+                    </template>
+                    <el-switch
+                        v-model="!this.state.web_state.web_ctrl"
+                        active-color="#13ce66"
+                        inactive-color="#ff4949"
+                        @change="switchChange"
+                    >
+                    </el-switch>
+                  </el-descriptions-item>
+                  <!--风扇-->
+                  <el-descriptions-item span="4">
                     <template slot="label">
                       <i class="iconfont icon-fengshan" style="color: #1C86E5"></i>
                       风扇
@@ -102,7 +127,9 @@
                       灯1
                     </template>
                     <el-tag size="mini"
-                            :type="this.state.web_state.ctrl_state.light_state.light_1 === -1 ? 'success':'danger'">{{this.state.web_state.ctrl_state.light_state.light_1 === -1 ? "关":"开"}}</el-tag>
+                            :type="this.state.web_state.web_ctrl === true ? this.state.web_state.ctrl_state.light_state.light_1 === -1 ? 'success':'danger' : this.state.deep_state.have_person.area_1 === -1 ? 'success':'danger'">
+                      {{this.state.web_state.web_ctrl === true ? this.state.web_state.ctrl_state.light_state.light_1 === -1 ? "关":"开" : this.state.deep_state.have_person.area_1 === -1 ? "关":"开"}}
+                    </el-tag>
                   </el-descriptions-item>
                   <el-descriptions-item span="1">
                     <template slot="label">
@@ -110,7 +137,9 @@
                       灯2
                     </template>
                     <el-tag size="mini"
-                            :type="this.state.web_state.ctrl_state.light_state.light_2 === -1 ? 'success':'danger'">{{this.state.web_state.ctrl_state.light_state.light_2 === -1 ? "关":"开"}}</el-tag>
+                            :type="this.state.web_state.web_ctrl === true ? this.state.web_state.ctrl_state.light_state.light_2 === -1 ? 'success':'danger' : this.state.deep_state.have_person.area_2 === -1 ? 'success':'danger'">
+                      {{this.state.web_state.web_ctrl === true ? this.state.web_state.ctrl_state.light_state.light_2 === -1 ? "关":"开" : this.state.deep_state.have_person.area_2 === -1 ? "关":"开"}}
+                    </el-tag>
                   </el-descriptions-item>
                   <el-descriptions-item span="1">
                     <template slot="label">
@@ -118,21 +147,25 @@
                       灯3
                     </template>
                     <el-tag size="mini"
-                            :type="this.state.web_state.ctrl_state.light_state.light_3 === -1 ? 'success':'danger'">{{this.state.web_state.ctrl_state.light_state.light_3 === -1 ? "关":"开"}}</el-tag>
+                            :type="this.state.web_state.web_ctrl === true ? this.state.web_state.ctrl_state.light_state.light_3 === -1 ? 'success':'danger' : this.state.deep_state.have_person.area_3 === -1 ? 'success':'danger'">
+                      {{this.state.web_state.web_ctrl === true ? this.state.web_state.ctrl_state.light_state.light_3 === -1 ? "关":"开" : this.state.deep_state.have_person.area_3 === -1 ? "关":"开"}}
+                    </el-tag>
                   </el-descriptions-item>
                   <el-descriptions-item span="1">
                     <template slot="label">
                       <i class="el-icon-s-opportunity" style="color: #FDB813"></i>
                       灯4
                     </template>
-                    <el-tag size="mini""
-                            :type="this.state.web_state.ctrl_state.light_state.light_4 === -1 ? 'success':'danger'">{{this.state.web_state.ctrl_state.light_state.light_4 === -1 ? "关":"开"}}</el-tag>
+                    <el-tag size="mini"
+                            :type="this.state.web_state.web_ctrl === true ? this.state.web_state.ctrl_state.light_state.light_4 === -1 ? 'success':'danger' : this.state.deep_state.have_person.area_4 === -1 ? 'success':'danger'">
+                      {{this.state.web_state.web_ctrl === true ? this.state.web_state.ctrl_state.light_state.light_4 === -1 ? "关":"开" : this.state.deep_state.have_person.area_4 === -1 ? "关":"开"}}
+                    </el-tag>
                   </el-descriptions-item>
-
                 </el-descriptions>
               </el-col>
+              <!--按钮-->
               <el-col :span="24">
-                <el-button type="primary" @click="control" style="float:left; margin-left: 360px;" size="small">控制</el-button>
+                <el-button type="primary" @click="control" style="float:left; margin-left: 340px;" size="small">控制</el-button>
                 <el-button type="info" @click="exit" style="float:right; margin-right: 15px;" size="small">退出</el-button>
               </el-col>
             </el-row>
@@ -144,7 +177,6 @@
         title="控制教室设备"
         :visible.sync="dialogVisible"
         width="50%"
-        :before-close="handleClose"
         >
       <el-form ref="form" :model="control_form" label-width="80px">
         <el-form-item label="风扇控制">
@@ -171,6 +203,7 @@
 </template>
 
 <script>
+import * as echarts from 'echarts'
 export default {
   name: "Detail",
   data(){
@@ -195,10 +228,10 @@ export default {
             //教室人数
             person_nums: 3,
             //1区域有没有人
-            area_1: 3,
-            area_2: 0,
-            area_3: 0,
-            area_4: 0
+            area_1: -1,
+            area_2: 1,
+            area_3: 1,
+            area_4: 1
           },
           person_state: {
             //人物状态
@@ -210,14 +243,14 @@ export default {
         },
         web_state: {
           //为0表示智能模式，为1表示网页控制
-          web_ctrl: 0,
+          web_ctrl: true,
           ctrl_state: {
             light_state: {
               //灯的状态
               light_1: 1,
-              light_2: 0,
-              light_3: 0,
-              light_4: 0
+              light_2: 1,
+              light_3: 1,
+              light_4: 1
             },
             //风扇状态
             fan_state: 1
@@ -226,11 +259,11 @@ export default {
       },
       //表单
       control_form: {
-        fan_state: true,
+        fan_state: false,
         light_1: false,
-        light_2: true,
+        light_2: false,
         light_3: false,
-        light_4: true
+        light_4: false
       },
       //表单的开关
       dialogVisible:false,
@@ -247,7 +280,10 @@ export default {
     }
   },
   methods: {
-    //修改数据
+    switchChange(){
+      console.log(this.state.web_state.web_ctrl)
+    },
+    //点击修改数据按钮弹出修改界面
     async update(){
       await this.$confirm('确认修改？')
           .then(_ => {
@@ -270,6 +306,7 @@ export default {
       )).catch(function (err) {
         console.log(err);
       })
+      console.log(this.state)
       console.log("打印状态")
       console.log(this.state.web_state.web_ctrl)
       console.log("打印人数")
@@ -308,42 +345,145 @@ export default {
     exit(){
       this.$router.push('/classrooms')
     },
-    setSize: function() {
-      // 通过浏览器宽度(图片宽度)计算高度
-      this.bannerHeight = (400 / 1920) * this.screenWidth;
-    }
   },
-  // async mounted() {
-  //   this.state = setInterval(() => {
-  //     this.request();
-  //   }, 2000);
-  //       // 首次加载时,需要调用一次
-  //   this.screenWidth = window.innerWidth;
-  //   this.setSize();
-  //   // 窗口大小发生改变时,调用一次
-  //   window.onresize = () => {
-  //     this.screenWidth = window.innerWidth;
-  //     this.setSize();
-  //   };
-  //   this.control_form.fan_state = this.state.web_state.ctrl_state.fan_state === 1;
-  //   this.control_form.light_1 = this.state.web_state.ctrl_state.light_state.light_1 === 1;
-  //   this.control_form.light_2 = this.state.web_state.ctrl_state.light_state.light_2 === 1;
-  //   this.control_form.light_3 = this.state.web_state.ctrl_state.light_state.light_3 === 1;
-  //   this.control_form.light_4 = this.state.web_state.ctrl_state.light_state.light_4 === 1;
-  // },
+  async mounted() {
+    const chartDom = document.getElementById('main');
+    const myChart = echarts.init(chartDom);
+    let option;
+    option = {
+      title: {
+        text: '教室日用电量使用情况',
+      },
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'cross'
+        }
+      },
+      toolbox: {
+        show: true,
+
+      },
+      xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        // prettier-ignore
+        data: ['00:00', '01:15', '02:30', '03:45', '05:00', '06:15', '07:30', '08:45', '10:00', '11:15', '12:30', '13:45', '15:00', '16:15', '17:30', '18:45', '20:00', '21:15', '22:30', '23:45']
+      },
+      yAxis: {
+        type: 'value',
+        axisLabel: {
+          formatter: '{value} W'
+        },
+        axisPointer: {
+          snap: true
+        }
+      },
+      visualMap: {
+        show: false,
+        dimension: 0,
+        pieces: [
+          {
+            lte: 7,
+            color: 'green'
+          },
+          {
+            gt: 7,
+            lte: 10,
+            color: 'red'
+          },
+          {
+            gt: 10,
+            lte: 12,
+            color: 'green'
+          },
+          {
+            gt: 12,
+            lte: 14,
+            color: 'red'
+          },
+          {
+            gt: 14,
+            color: 'green'
+          }
+        ]
+      },
+      series: [
+        {
+          name: '用电量',
+          type: 'line',
+          smooth: true,
+          // prettier-ignore
+          data: [50, 0,0, 0, 70,150, 300,650, 700, 750, 670, 400, 640, 750, 700, 500, 600, 620, 300, 130],
+          markArea: {
+            itemStyle: {
+              color: 'rgba(255, 173, 177, 0.4)'
+            },
+            data: [
+              [
+                {
+                  name: '早高峰',
+                  xAxis: '08:45'
+                },
+                {
+                  xAxis: '12:30'
+                }
+              ],
+              [
+                {
+                  name: '午高峰',
+                  xAxis: '15:00'
+                },
+                {
+                  xAxis: '17:30'
+                }
+              ]
+            ]
+          }
+        }
+      ],
+      grid: {
+        x: 50,
+        y: 50,
+        x2: 30,
+        y2: 35
+      },
+    };
+    option && myChart.setOption(option);
+    //定时器
+    setInterval(() => {
+      this.request();
+    }, 2000);
+
+    // //设置表单的数值
+    // this.control_form.fan_state = this.state.web_state.ctrl_state.fan_state
+    // this.control_form.light_1 = this.state.web_state.ctrl_state.light_state.light_1 === 1;
+    // this.control_form.light_2 = this.state.web_state.ctrl_state.light_state.light_2 === 1;
+    // this.control_form.light_3 = this.state.web_state.ctrl_state.light_state.light_3 === 1;
+    // this.control_form.light_4 = this.state.web_state.ctrl_state.light_state.light_4 === 1;
+  },
   //初始化刷新，此处刷新第二个，写后端应该根据pageSize，pageNum请求到教室id封装List然后通过request来请求State进行封装classroomData
-  // async created() {
-  //   console.log("初始化")
-  //   await this.request(1)
-  //   console.log(this.state)
-  // },
+  async created() {
+    console.log("初始化")
+    await this.request(1)
+    console.log(this.state)
+  },
 
 }
 </script>
 
 <style lang="less" scoped>
+/deep/.el-main{
+  padding-top: 10px;
+  padding-left: 5px;
+}
+/deep/.el-card__body {
+  padding-left: 30px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
 .descriptions{
-  margin-bottom: 20px;
+  margin-bottom: 5px;
 }
 .el-radio {
   //添加边框
@@ -379,14 +519,13 @@ export default {
   background-color: #d3dce6;
 }
 .banner{
-  width: 560px;
+  width: 520px;
 }
 img {
   width: 100%;
   height: inherit;
 }
-.box{
-  margin-top: 10px;
-  margin-left: 5px;
+.descriptions{
+  font-size: small;
 }
 </style>
