@@ -41,7 +41,12 @@
         <el-table-column label="智能模式">
           <template v-slot="scope">
             {{scope.row.state.web_state.web_ctrl}}
-            <el-switch v-model="scope.row.state.web_state.web_ctrl" active-color="#13ce66" inactive-color="#ff4949" @change="switchChange($event)"> </el-switch>
+            <el-switch v-model="scope.row.state.web_state.web_ctrl"
+                       active-color="#13ce66"
+                       inactive-color="#ff4949"
+                       :inactive-value = true
+                       :active-value = false
+                       @change="switchChange($event)"> </el-switch>
           </template>
         </el-table-column>
         <el-table-column prop="adminName" label="管理员"></el-table-column>
@@ -98,14 +103,16 @@ import Breadcrumb from "@/components/breadcrumb/Breadcrumb";
 export default {
   name: "Classroom",
   methods: {
-    switchChange(val) {
+    //智能模式切换调用send方法
+    async switchChange(val) {
       console.log(val)
       console.log(this.$data.state)
       this.state.web_state.web_ctrl = !val;
       console.log("web的状态");
       console.log(this.state.web_state);
-      this.send()
+      await this.send()
     },
+    //初始化获得classroom数据
     getClassroomList(){
       console.log(this)
       console.log("获取")
@@ -175,7 +182,7 @@ export default {
   },
   //定时器更新state
   async mounted() {
-    setInterval(()=>this.request(), 1000);
+    // setInterval(()=>this.request(), 1000);
   },
   data(){
     return{

@@ -71,10 +71,12 @@
                       智能模式
                     </template>
                     <el-switch
-                        v-model="!this.state.web_state.web_ctrl"
+                        v-model="state.web_state.web_ctrl"
                         active-color="#13ce66"
                         inactive-color="#ff4949"
-                        @change="switchChange"
+                        :inactive-value = true
+                        :active-value = false
+                        @change="switchChange($event)"
                     >
                     </el-switch>
                   </el-descriptions-item>
@@ -243,6 +245,7 @@ export default {
         },
         web_state: {
           //为0表示智能模式，为1表示网页控制
+          //智能模式下area的状态一定和light一致
           web_ctrl: true,
           ctrl_state: {
             light_state: {
@@ -280,8 +283,11 @@ export default {
     }
   },
   methods: {
-    switchChange(){
-      console.log(this.state.web_state.web_ctrl)
+    async switchChange(val){
+      console.log("人工模式")
+      console.log(this.$data.state.web_state.web_ctrl)
+      console.log(this.$data.state)
+      await this.send();
     },
     //点击修改数据按钮弹出修改界面
     async update(){
@@ -295,7 +301,7 @@ export default {
       this.dialogVisible = false
     },
     //接受后端数据 id是教室对应的id
-    async request(id){
+    async request(){
       var url = this.HOME + '/web_get_state';
       await this.$axios({  //this代表vue对象，之前在入口文件中把axios挂载到了vue中，所以这里直接用this.$axios调用axios对象
         method: 'post',
@@ -347,6 +353,7 @@ export default {
     },
   },
   async mounted() {
+    //echarts图表
     const chartDom = document.getElementById('main');
     const myChart = echarts.init(chartDom);
     let option;
@@ -450,7 +457,8 @@ export default {
       },
     };
     option && myChart.setOption(option);
-    //定时器
+
+    //定时器 2秒更新一次
     setInterval(() => {
       this.request();
     }, 2000);
@@ -465,8 +473,8 @@ export default {
   //初始化刷新，此处刷新第二个，写后端应该根据pageSize，pageNum请求到教室id封装List然后通过request来请求State进行封装classroomData
   async created() {
     console.log("初始化")
-    await this.request(1)
-    console.log(this.state)
+    await this.request()
+    console.log(this.$data.state)
   },
 
 }
