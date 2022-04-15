@@ -9,6 +9,7 @@ import Classroom from "@/components/classroom/Classroom";
 import Devices from "@/components/devices/Devices";
 import Campus from "@/components/campus/Campus";
 import Building from "@/components/building/Building";
+import Detail from "@/components/classroom/Detail";
 Vue.use(VueRouter)
 
 const routes = [
@@ -50,6 +51,11 @@ const routes = [
         path: '/buildings',
         component: Building
       },
+      {
+        path: '/detail',
+        component: Detail
+      },
+
     ]
   }
 ]

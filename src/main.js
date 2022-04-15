@@ -4,6 +4,7 @@ import router from './router'
 import './plugins/element.js'
 // 导入字体图标
 import './assets/fonts/iconfont.css'
+import './assets/iconfont/iconfont.css'
 // 导入全局样式表
 import './assets/css/global.css'
 import axios from 'axios'
@@ -11,7 +12,6 @@ Vue.config.productionTip = false
 Vue.prototype.$axios = axios
 Vue.prototype.HOME = '/api'
 // axios.defaults.baseURL = 'https://lianghj.top:8888/api/private/v1/'
-// axios.defaults.baseURL = 'http://192.168.43.169:5000/'
 // Vue.prototype.$http = axios
 axios.interceptors.request.use(config => {
   console.log(config)

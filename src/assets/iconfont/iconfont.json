@@ -1,0 +1,72 @@
+{
+  "id": "3331771",
+  "name": "1",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "2376811",
+      "name": "室温",
+      "font_class": "shiwen",
+      "unicode": "e60e",
+      "unicode_decimal": 58894
+    },
+    {
+      "icon_id": "3904094",
+      "name": "灯泡",
+      "font_class": "dengpao",
+      "unicode": "e60f",
+      "unicode_decimal": 58895
+    },
+    {
+      "icon_id": "5083506",
+      "name": "风扇",
+      "font_class": "fengshan",
+      "unicode": "e608",
+      "unicode_decimal": 58888
+    },
+    {
+      "icon_id": "6306121",
+      "name": "添加区域",
+      "font_class": "tianjiaquyu",
+      "unicode": "e611",
+      "unicode_decimal": 58897
+    },
+    {
+      "icon_id": "7957898",
+      "name": "总人数",
+      "font_class": "zongrenshu",
+      "unicode": "e630",
+      "unicode_decimal": 58928
+    },
+    {
+      "icon_id": "23079139",
+      "name": "湿度",
+      "font_class": "shidu",
+      "unicode": "e669",
+      "unicode_decimal": 58985
+    },
+    {
+      "icon_id": "23385682",
+      "name": "火灾事故",
+      "font_class": "huozaishigu",
+      "unicode": "e615",
+      "unicode_decimal": 58901
+    },
+    {
+      "icon_id": "25065669",
+      "name": "烟雾",
+      "font_class": "yanwu",
+      "unicode": "e6d2",
+      "unicode_decimal": 59090
+    },
+    {
+      "icon_id": "22898788",
+      "name": "2.8通风风扇",
+      "font_class": "a-28tongfengfengshan",
+      "unicode": "e604",
+      "unicode_decimal": 58884
+    }
+  ]
+}

@@ -110,6 +110,14 @@ export default {
       }
     }
   },
+  methods:{
+    getCampusList(){
+      this.$message.success('获取校区列表成功!')
+    }
+  },
+  created() {
+    this.getCampusList()
+  },
   components: {
     //面包屑组件
     Breadcrumb

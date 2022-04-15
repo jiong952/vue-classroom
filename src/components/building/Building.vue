@@ -143,7 +143,13 @@ export default {
       }
     }
   },
+  created() {
+    this.getBuildingList();
+  },
   methods:{
+    getBuildingList(){
+      this.$message.success('获取楼宇列表成功!')
+    },
     // 监听 pagesize 改变事件 每页显示的个数
     handleSizeChange(newSize) {
       console.log(newSize)

@@ -39,9 +39,20 @@ import {
     Checkbox,
     Upload,
     Timeline,
-    TimelineItem
+    TimelineItem,
+    Popover,
+    Descriptions,
+    DescriptionsItem,
+    Carousel,
+    CarouselItem,
+    Radio
 } from 'element-ui'
-
+Vue.use(Radio)
+Vue.use(CarouselItem)
+Vue.use(Carousel)
+Vue.use(Descriptions)
+Vue.use(DescriptionsItem)
+Vue.use(Popover)
 Vue.use(Button)
 Vue.use(Form)
 Vue.use(FormItem)
