@@ -40,12 +40,14 @@
         </el-table-column>
         <el-table-column label="智能模式">
           <template v-slot="scope">
-            {{scope.row.state.web_state.web_ctrl}}
             <el-switch v-model="scope.row.state.web_state.web_ctrl"
                        active-color="#13ce66"
                        inactive-color="#ff4949"
+                       active-text="是"
+                       inactive-text="否"
                        :inactive-value = true
                        :active-value = false
+                       :width=60
                        @change="switchChange($event)"> </el-switch>
           </template>
         </el-table-column>
@@ -186,6 +188,7 @@ export default {
   },
   data(){
     return{
+      //封装返回给后台的state
       state_s: {
         web_state:{}
       },
@@ -353,25 +356,28 @@ export default {
             "adminName":"洪俊章",
             "address": "https://myblogimgbed.oss-cn-shenzhen.aliyuncs.com/img/empty.png",
             "create_time": "2017-11-09T20:36:26.000Z",
-            "state": {
+            state: {
               //湿度
-              Humidity: 3,
+              Humidity: 11,
               //温度
-              Temperature: 3,
+              Temperature: 11,
               //火灾
               fire_state: "safe",
               //火灾
               smoke_state: "safe",
               //深度学习状态
-              "deep_state": {
+              deep_state: {
                 have_person: {
+                  //教室人数
                   person_nums: 0,
-                  area_1: 3,
-                  area_2: 0,
-                  area_3: 0,
-                  area_4: 0
+                  //1区域有没有人
+                  area_1: -1,
+                  area_2: -1,
+                  area_3: -1,
+                  area_4: -1
                 },
                 person_state: {
+                  //人物状态
                   person_1: 0,
                   person_2: 0,
                   person_3: 0,
@@ -379,14 +385,17 @@ export default {
                 }
               },
               web_state: {
+                //为0表示智能模式，为1表示网页控制
                 web_ctrl: false,
                 ctrl_state: {
                   light_state: {
+                    //灯的状态
                     light_1: 0,
                     light_2: 0,
                     light_3: 0,
                     light_4: 0
                   },
+                  //风扇状态
                   fan_state: 0
                 }
               }
@@ -403,7 +412,7 @@ export default {
             "adminName":"洪俊章",
             "address": "https://myblogimgbed.oss-cn-shenzhen.aliyuncs.com/img/not_empty.png",
             "create_time": "2017-11-09T20:36:26.000Z",
-            "state": {
+            state: {
               //湿度
               Humidity: 11,
               //温度
@@ -416,9 +425,9 @@ export default {
               deep_state: {
                 have_person: {
                   //教室人数
-                  person_nums: 3,
+                  person_nums: 1,
                   //1区域有没有人
-                  area_1: 3,
+                  area_1: 1,
                   area_2: -1,
                   area_3: -1,
                   area_4: -1
@@ -438,9 +447,9 @@ export default {
                   light_state: {
                     //灯的状态
                     light_1: 1,
-                    light_2: 1,
-                    light_3: 1,
-                    light_4: 1
+                    light_2: 0,
+                    light_3: 0,
+                    light_4: 0
                   },
                   //风扇状态
                   fan_state: 1
@@ -458,25 +467,28 @@ export default {
             "adminName":"洪俊章",
             "address": "https://myblogimgbed.oss-cn-shenzhen.aliyuncs.com/img/empty.png",
             "create_time": "2017-11-09T20:36:26.000Z",
-            "state": {
+            state: {
               //湿度
-              Humidity: 3,
+              Humidity: 11,
               //温度
-              Temperature: 3,
+              Temperature: 11,
               //火灾
               fire_state: "safe",
               //火灾
               smoke_state: "safe",
               //深度学习状态
-              "deep_state": {
+              deep_state: {
                 have_person: {
+                  //教室人数
                   person_nums: 0,
-                  area_1: 3,
-                  area_2: 0,
-                  area_3: 0,
-                  area_4: 0
+                  //1区域有没有人
+                  area_1: -1,
+                  area_2: -1,
+                  area_3: -1,
+                  area_4: -1
                 },
                 person_state: {
+                  //人物状态
                   person_1: 0,
                   person_2: 0,
                   person_3: 0,
@@ -484,14 +496,17 @@ export default {
                 }
               },
               web_state: {
+                //为0表示智能模式，为1表示网页控制
                 web_ctrl: false,
                 ctrl_state: {
                   light_state: {
+                    //灯的状态
                     light_1: 0,
                     light_2: 0,
                     light_3: 0,
                     light_4: 0
                   },
+                  //风扇状态
                   fan_state: 0
                 }
               }
@@ -507,25 +522,28 @@ export default {
             "adminName":"洪俊章",
             "address": "https://myblogimgbed.oss-cn-shenzhen.aliyuncs.com/img/empty.png",
             "create_time": "2017-11-09T20:36:26.000Z",
-            "state": {
+            state: {
               //湿度
-              Humidity: 3,
+              Humidity: 11,
               //温度
-              Temperature: 3,
+              Temperature: 11,
               //火灾
               fire_state: "safe",
               //火灾
               smoke_state: "safe",
               //深度学习状态
-              "deep_state": {
+              deep_state: {
                 have_person: {
+                  //教室人数
                   person_nums: 0,
-                  area_1: 3,
-                  area_2: 0,
-                  area_3: 0,
-                  area_4: 0
+                  //1区域有没有人
+                  area_1: -1,
+                  area_2: -1,
+                  area_3: -1,
+                  area_4: -1
                 },
                 person_state: {
+                  //人物状态
                   person_1: 0,
                   person_2: 0,
                   person_3: 0,
@@ -533,14 +551,17 @@ export default {
                 }
               },
               web_state: {
+                //为0表示智能模式，为1表示网页控制
                 web_ctrl: false,
                 ctrl_state: {
                   light_state: {
+                    //灯的状态
                     light_1: 0,
                     light_2: 0,
                     light_3: 0,
                     light_4: 0
                   },
+                  //风扇状态
                   fan_state: 0
                 }
               }
@@ -556,25 +577,28 @@ export default {
             "adminName":"洪俊章",
             "address": "https://myblogimgbed.oss-cn-shenzhen.aliyuncs.com/img/empty.png",
             "create_time": "2017-11-09T20:36:26.000Z",
-            "state": {
+            state: {
               //湿度
-              Humidity: 3,
+              Humidity: 11,
               //温度
-              Temperature: 3,
+              Temperature: 11,
               //火灾
               fire_state: "safe",
               //火灾
               smoke_state: "safe",
               //深度学习状态
-              "deep_state": {
+              deep_state: {
                 have_person: {
+                  //教室人数
                   person_nums: 0,
-                  area_1: 3,
-                  area_2: 0,
-                  area_3: 0,
-                  area_4: 0
+                  //1区域有没有人
+                  area_1: -1,
+                  area_2: -1,
+                  area_3: -1,
+                  area_4: -1
                 },
                 person_state: {
+                  //人物状态
                   person_1: 0,
                   person_2: 0,
                   person_3: 0,
@@ -582,14 +606,17 @@ export default {
                 }
               },
               web_state: {
+                //为0表示智能模式，为1表示网页控制
                 web_ctrl: false,
                 ctrl_state: {
                   light_state: {
+                    //灯的状态
                     light_1: 0,
                     light_2: 0,
                     light_3: 0,
                     light_4: 0
                   },
+                  //风扇状态
                   fan_state: 0
                 }
               }
@@ -619,5 +646,41 @@ export default {
 <style lang="less" scoped>
 .el-table {
   margin-top: 15px;
+}
+/deep/ .el-switch__label {
+  position: absolute;
+  display: none;
+  color: #fff;
+}
+/deep/ .el-switch__label--left {
+  z-index: 9;
+  left: 25px;
+}
+/deep/ .el-switch__label--right {
+  z-index: 9;
+  left: -2px;
+}
+/deep/ .el-switch__label.is-active {
+  display: block;
+}
+/deep/ .el-switch.is-checked .el-switch__core::after {
+  left: 94%;
+}
+/deep/ .el-switch .el-switch__core,.el-switch .el-switch__label {
+  width: 48px !important;
+  height: 22px !important;
+}
+/deep/ .el-switch__core{
+  // border-radius:15px;
+  &:after{
+    width:20px;
+    height:20px;
+    top:0px;
+    // left:3px;
+    // z-index:10;
+  }
+}
+/deep/ .el-switch__label.is-active {
+  color: #ffffff;
 }
 </style>

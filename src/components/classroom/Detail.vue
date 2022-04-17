@@ -20,20 +20,20 @@
               <!--echarts图表-->
               <el-col :span="24" style="padding-left: 0;padding-right: 0">
                 <!-- 为 ECharts 准备一个定义了宽高的 DOM -->
-                <div id="main" style="width: 520px;height:250px;"></div>
+                <div id="main" style="width: 540px;height:320px;margin-left: auto"></div>
               </el-col>
               <!--教室设备使用情况-->
               <el-col :span="24">
                 <el-descriptions class="descriptions" :column="4" border size="mini">
                   <!--温度湿度-->
-                  <el-descriptions-item span="2">
+                  <el-descriptions-item span="1">
                     <template slot="label" style="font-size: large">
                       <i class="iconfont icon-shidu" style="color: #2381BF"></i>
                       湿度
                     </template>
                     {{this.state.Humidity}}
                   </el-descriptions-item>
-                  <el-descriptions-item span="2">
+                  <el-descriptions-item span="1">
                     <template slot="label">
                       <i class="iconfont icon-shiwen"></i>
                       温度
@@ -41,21 +41,21 @@
                     {{this.state.Temperature}}
                   </el-descriptions-item>
                   <!--火灾烟雾情况-->
-                  <el-descriptions-item span="2">
+                  <el-descriptions-item span="1">
                     <template slot="label">
                       <i class="iconfont icon-huozaishigu" style="color:#D90C0C;"></i>
-                      火灾情况
+                      火灾
                     </template>
                     <el-tag size="mini"
-                            :type="this.state.fire_state === ('safe') ? 'success':'danger'">{{this.state.fire_state === ('safe') ? "安全":"火灾危害"}}</el-tag>
+                            :type="this.state.fire_state === ('safe') ? 'success':'danger'">{{this.state.fire_state === ('safe') ? "安全":"火灾"}}</el-tag>
                   </el-descriptions-item>
-                  <el-descriptions-item span="2">
+                  <el-descriptions-item span="1">
                     <template slot="label">
                       <i class="iconfont icon-yanwu"></i>
-                      烟雾情况
+                      烟雾
                     </template>
                     <el-tag size="mini"
-                            :type="this.state.smoke_state === ('safe') ? 'success':'danger'">{{this.state.smoke_state === ('safe') ? "安全":"烟雾危害"}}</el-tag>
+                            :type="this.state.smoke_state === ('safe') ? 'success':'danger'">{{this.state.smoke_state === ('safe') ? "安全":"烟雾"}}</el-tag>
                   </el-descriptions-item>
                   <!--教室总人数以及智能模式情况-->
                   <el-descriptions-item span="2">
@@ -76,6 +76,9 @@
                         inactive-color="#ff4949"
                         :inactive-value = true
                         :active-value = false
+                        active-text="是"
+                        inactive-text="否"
+                        :width=60
                         @change="switchChange($event)"
                     >
                     </el-switch>
@@ -167,8 +170,8 @@
               </el-col>
               <!--按钮-->
               <el-col :span="24">
-                <el-button type="primary" @click="control" style="float:left; margin-left: 340px;" size="small">控制</el-button>
-                <el-button type="info" @click="exit" style="float:right; margin-right: 15px;" size="small">退出</el-button>
+                <el-button type="primary" @click="control" style="float:left; margin-left:400px;" size="small">控制</el-button>
+                <el-button type="info" @click="exit" style="float:right; margin-right: 15px;" size="small">返回</el-button>
               </el-col>
             </el-row>
           </el-card>
@@ -210,6 +213,51 @@ export default {
   name: "Detail",
   data(){
     return {
+      option : {
+        title: {
+          text: '教室学生实时状态占比',
+          left: 'center'
+        },
+        tooltip: {
+          trigger: 'item'
+        },
+        legend: {
+          orient: 'vertical',
+          left: 'left'
+        },
+        series: [
+          {
+            name: '学生状态',
+            type: 'pie',
+            radius: '75%',
+            //[0,1,2,3,4]对应[空座位,坐着,站着,趴着,举手]
+            data: [
+              { value: 5, name: '空座位'},
+              { value: 8, name: '坐着' },
+              { value: 1, name: '站着' },
+              { value: 3, name: '趴着' },
+              { value: 1, name: '举手' },
+            ],
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+              }
+            }
+          },
+        ]
+        ,grid: {
+          x: 0, //距离左边
+          x2: 0, //距离右边
+          y:0, //距离上边
+          y2:0,//距离下边
+          left:0,
+          right:0,
+          top:0,
+          bottom:0
+        },
+      },
       //封装传给后端
       state_s: {
         web_state:{}
@@ -235,6 +283,8 @@ export default {
             area_3: 1,
             area_4: 1
           },
+          //[空座位,举手,站着,坐着,趴着]
+          // [0,1,2,3,4]
           person_state: {
             //人物状态
             person_1: 0,
@@ -282,7 +332,94 @@ export default {
       ],
     }
   },
+  watch: {
+    // 观察cpu_option的变化
+    state: {
+      handler(newVal, oldVal) {
+        this.timer()
+        this.destroyed()
+      },
+      deep: true   //对象内部属性的监听
+    },
+  },
   methods: {
+    //这是一个定时
+    timer () {
+      return setTimeout(() => {
+        this.initCharts()
+      }, 2000)
+    },
+    // 销毁定时器
+    destroyed () {
+      clearTimeout(this.timer())
+    },
+    //图表数据更新
+    drawData(){
+      let empty = 0; //空座位
+      let sit = 0; //坐着
+      let stand = 0; //站着
+      let bend = 0; //趴着
+      let hand = 0; //举手
+      if(this.state.deep_state.person_state.person_1 === 0){
+        empty++;
+      }else if(this.state.deep_state.person_state.person_1 === 1){
+        sit++;
+      }else if(this.state.deep_state.person_state.person_1 === 2){
+        stand++;
+      }else if(this.state.deep_state.person_state.person_1 === 3){
+        bend++;
+      }else if(this.state.deep_state.person_state.person_1 === 4){
+        hand++;
+      }
+      if(this.state.deep_state.person_state.person_2 === 0){
+        empty++;
+      }else if(this.state.deep_state.person_state.person_2 === 1){
+        sit++;
+      }else if(this.state.deep_state.person_state.person_2 === 2){
+        stand++;
+      }else if(this.state.deep_state.person_state.person_2 === 3){
+        bend++;
+      }else if(this.state.deep_state.person_state.person_2 === 4){
+        hand++;
+      }
+      if(this.state.deep_state.person_state.person_3 === 0){
+        empty++;
+      }else if(this.state.deep_state.person_state.person_3 === 1){
+        sit++;
+      }else if(this.state.deep_state.person_state.person_3 === 2){
+        stand++;
+      }else if(this.state.deep_state.person_state.person_3 === 3){
+        bend++;
+      }else if(this.state.deep_state.person_state.person_3 === 4){
+        hand++;
+      }
+      if(this.state.deep_state.person_state.person_4 === 0){
+        empty++;
+      }else if(this.state.deep_state.person_state.person_4 === 1){
+        sit++;
+      }else if(this.state.deep_state.person_state.person_4 === 2){
+        stand++;
+      }else if(this.state.deep_state.person_state.person_4 === 3){
+        bend++;
+      }else if(this.state.deep_state.person_state.person_4 === 4){
+        hand++;
+      }
+      this.option.series[0].data[0].value = empty ;
+      this.option.series[0].data[1].value = sit ;
+      this.option.series[0].data[2].value = stand ;
+      this.option.series[0].data[3].value = bend ;
+      this.option.series[0].data[4].value = hand ;
+    },
+    //初始化图表
+    initCharts(){
+      //echarts图表
+      const chartDom = document.getElementById('main');
+      const myChart = echarts.init(chartDom);
+      //根据传过来的数据更新表
+      this.drawData();
+      //设置数据
+      myChart.setOption(this.option);
+    },
     async switchChange(val){
       console.log("人工模式")
       console.log(this.$data.state.web_state.web_ctrl)
@@ -338,14 +475,29 @@ export default {
         console.log(err);
       })
     },
-    //调出控制表单
+    //调出控制表单,处于智能模式先切换为人工模式才能修改
     control(){
       this.control_form.fan_state = this.state.web_state.ctrl_state.fan_state === 1;
       this.control_form.light_1 = this.state.web_state.ctrl_state.light_state.light_1 === 1;
       this.control_form.light_2 = this.state.web_state.ctrl_state.light_state.light_2 === 1;
       this.control_form.light_3 = this.state.web_state.ctrl_state.light_state.light_3 === 1;
       this.control_form.light_4 = this.state.web_state.ctrl_state.light_state.light_4 === 1;
-      this.dialogVisible = true;
+      if(this.state.web_state.web_ctrl === false){
+        this.$confirm('当前处于智能模式无法修改，请先切换为人工模式', '提示', {
+          confirmButtonText: '确定',
+          type: 'warning'
+        }).then(() => {
+          //改变状态
+          this.$message({
+            type: 'info',
+            message: '已取消控制'
+          });
+        })
+      }else {
+        this.dialogVisible = true;
+      }
+
+
     },
     //退出到教室详情页
     exit(){
@@ -354,109 +506,9 @@ export default {
   },
   async mounted() {
     //echarts图表
-    const chartDom = document.getElementById('main');
-    const myChart = echarts.init(chartDom);
-    let option;
-    option = {
-      title: {
-        text: '教室日用电量使用情况',
-      },
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          type: 'cross'
-        }
-      },
-      toolbox: {
-        show: true,
-
-      },
-      xAxis: {
-        type: 'category',
-        boundaryGap: false,
-        // prettier-ignore
-        data: ['00:00', '01:15', '02:30', '03:45', '05:00', '06:15', '07:30', '08:45', '10:00', '11:15', '12:30', '13:45', '15:00', '16:15', '17:30', '18:45', '20:00', '21:15', '22:30', '23:45']
-      },
-      yAxis: {
-        type: 'value',
-        axisLabel: {
-          formatter: '{value} W'
-        },
-        axisPointer: {
-          snap: true
-        }
-      },
-      visualMap: {
-        show: false,
-        dimension: 0,
-        pieces: [
-          {
-            lte: 7,
-            color: 'green'
-          },
-          {
-            gt: 7,
-            lte: 10,
-            color: 'red'
-          },
-          {
-            gt: 10,
-            lte: 12,
-            color: 'green'
-          },
-          {
-            gt: 12,
-            lte: 14,
-            color: 'red'
-          },
-          {
-            gt: 14,
-            color: 'green'
-          }
-        ]
-      },
-      series: [
-        {
-          name: '用电量',
-          type: 'line',
-          smooth: true,
-          // prettier-ignore
-          data: [50, 0,0, 0, 70,150, 300,650, 700, 750, 670, 400, 640, 750, 700, 500, 600, 620, 300, 130],
-          markArea: {
-            itemStyle: {
-              color: 'rgba(255, 173, 177, 0.4)'
-            },
-            data: [
-              [
-                {
-                  name: '早高峰',
-                  xAxis: '08:45'
-                },
-                {
-                  xAxis: '12:30'
-                }
-              ],
-              [
-                {
-                  name: '午高峰',
-                  xAxis: '15:00'
-                },
-                {
-                  xAxis: '17:30'
-                }
-              ]
-            ]
-          }
-        }
-      ],
-      grid: {
-        x: 50,
-        y: 50,
-        x2: 30,
-        y2: 35
-      },
-    };
-    option && myChart.setOption(option);
+    this.$nextTick(() => {
+      this.initCharts()
+    })
 
     //定时器 2秒更新一次
     setInterval(() => {
@@ -476,6 +528,7 @@ export default {
     await this.request()
     console.log(this.$data.state)
   },
+
 
 }
 </script>
@@ -535,5 +588,42 @@ img {
 }
 .descriptions{
   font-size: small;
+}
+
+/deep/ .el-switch__label {
+  position: absolute;
+  display: none;
+  color: #fff;
+}
+/deep/ .el-switch__label--left {
+  z-index: 9;
+  left: 25px;
+}
+/deep/ .el-switch__label--right {
+  z-index: 9;
+  left: -2px;
+}
+/deep/ .el-switch__label.is-active {
+  display: block;
+}
+/deep/ .el-switch.is-checked .el-switch__core::after {
+  left: 94%;
+}
+/deep/ .el-switch .el-switch__core,.el-switch .el-switch__label {
+  width: 48px !important;
+  height: 22px !important;
+}
+/deep/ .el-switch__core{
+  // border-radius:15px;
+  &:after{
+    width:20px;
+    height:20px;
+    top:0px;
+    // left:3px;
+    // z-index:10;
+  }
+}
+/deep/ .el-switch__label.is-active {
+  color: #ffffff;
 }
 </style>

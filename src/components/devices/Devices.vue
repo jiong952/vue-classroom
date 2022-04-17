@@ -20,6 +20,13 @@
           <el-button type="primary">查询</el-button>
         </el-col>
       </el-row>
+      <!--echarts图表-->
+      <el-row :gutter="10">
+        <el-col :span="24" style="padding-left: 0;padding-right: 0">
+          <!-- 为 ECharts 准备一个定义了宽高的 DOM -->
+          <div id="main" style="width: 550px;height:300px;"></div>
+        </el-col>
+      </el-row>
       <!-- 分页 -->
       <el-pagination
           @current-change="handleCurrentChange"
@@ -36,6 +43,7 @@
 </template>
 
 <script>
+import * as echarts from 'echarts'
 import Breadcrumb from "@/components/breadcrumb/Breadcrumb";
 export default {
   name: "Devices",
@@ -184,6 +192,112 @@ export default {
       this.queryInfo.pagenum = newPage
       this.getUserList()
     },
+  },
+  mounted() {
+    //echarts图表
+    const chartDom = document.getElementById('main');
+    const myChart = echarts.init(chartDom);
+    let option;
+    option = {
+      title: {
+        text: '教室日用电量使用情况',
+      },
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'cross'
+        }
+      },
+      toolbox: {
+        show: true,
+
+      },
+      xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        // prettier-ignore
+        data: ['00:00', '01:15', '02:30', '03:45', '05:00', '06:15', '07:30', '08:45', '10:00', '11:15', '12:30', '13:45', '15:00', '16:15', '17:30', '18:45', '20:00', '21:15', '22:30', '23:45']
+      },
+      yAxis: {
+        type: 'value',
+        axisLabel: {
+          formatter: '{value} W'
+        },
+        axisPointer: {
+          snap: true
+        }
+      },
+      visualMap: {
+        show: false,
+        dimension: 0,
+        pieces: [
+          {
+            lte: 7,
+            color: 'green'
+          },
+          {
+            gt: 7,
+            lte: 10,
+            color: 'red'
+          },
+          {
+            gt: 10,
+            lte: 12,
+            color: 'green'
+          },
+          {
+            gt: 12,
+            lte: 14,
+            color: 'red'
+          },
+          {
+            gt: 14,
+            color: 'green'
+          }
+        ]
+      },
+      series: [
+        {
+          name: '用电量',
+          type: 'line',
+          smooth: true,
+          // prettier-ignore
+          data: [50, 0,0, 0, 70,150, 300,650, 700, 750, 670, 400, 640, 750, 700, 500, 600, 620, 300, 130],
+          markArea: {
+            itemStyle: {
+              color: 'rgba(255, 173, 177, 0.4)'
+            },
+            data: [
+              [
+                {
+                  name: '早高峰',
+                  xAxis: '08:45'
+                },
+                {
+                  xAxis: '12:30'
+                }
+              ],
+              [
+                {
+                  name: '午高峰',
+                  xAxis: '15:00'
+                },
+                {
+                  xAxis: '17:30'
+                }
+              ]
+            ]
+          }
+        }
+      ],
+      grid: {
+        x: 50,
+        y: 50,
+        x2: 30,
+        y2: 35
+      },
+    };
+    option && myChart.setOption(option);
   }
 }
 </script>
