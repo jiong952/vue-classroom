@@ -416,7 +416,7 @@ export default {
       const chartDom = document.getElementById('main');
       const myChart = echarts.init(chartDom);
       //根据传过来的数据更新表
-      this.drawData();
+      // this.drawData();
       //设置数据
       myChart.setOption(this.option);
     },
