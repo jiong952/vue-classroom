@@ -4,13 +4,13 @@ import Login from "@/components/Login";
 import Home from "@/components/Home";
 import Welcome from "@/components/Welcome";
 import User from "@/components/users/User";
-import Right from "@/components/rights/Right";
 import Classroom from "@/components/classroom/Classroom";
 import Devices from "@/components/devices/Devices";
 import Campus from "@/components/campus/Campus";
 import Building from "@/components/building/Building";
 import Detail from "@/components/classroom/Detail";
 import Echarts from "@/components/Echarts";
+import Video from "@/components/Video";
 Vue.use(VueRouter)
 
 const routes = [
@@ -59,6 +59,10 @@ const routes = [
       {
         path: '/echarts',
         component: Echarts
+      },
+      {
+        path: '/video',
+        component: Video
       },
 
     ]

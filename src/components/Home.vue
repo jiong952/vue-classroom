@@ -6,7 +6,11 @@
         <img src="../assets/logo.png" alt="" />
         <span>智能教室管理系统</span>
       </div>
-      <el-button type="info" @click="logout">退出</el-button>
+      <div>
+        <div style="font-size: medium; padding-right: 15px">admin</div>
+        <el-button type="info" @click="logout">退出</el-button>
+      </div>
+
     </el-header>
     <el-container>
       <!-- 侧边栏 -->

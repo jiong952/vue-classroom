@@ -170,8 +170,9 @@
               </el-col>
               <!--按钮-->
               <el-col :span="24">
-                <el-button type="primary" @click="control" style="float:left; margin-left:400px;" size="small">控制</el-button>
-                <el-button type="info" @click="exit" style="float:right; margin-right: 15px;" size="small">返回</el-button>
+                <el-button type="primary" @click="control"  size="small">控制</el-button>
+                <el-button type="info" @click="exit"  size="small">返回</el-button>
+                <el-button type="primary" @click="video"  size="small">实时监控</el-button>
               </el-col>
             </el-row>
           </el-card>
@@ -341,8 +342,25 @@ export default {
       },
       deep: true   //对象内部属性的监听
     },
+    'state.fire_state'(newVal, oldVal){
+      console.log("新"+newVal);
+      console.log("旧"+oldVal)
+      if(newVal !== 'safe'){
+        this.$message.error("火灾发生！！！")
+      }
+    },
+    'state.smoke_state'(newVal, oldVal){
+      console.log("新"+newVal);
+      console.log("旧"+oldVal)
+      if(newVal !== 'safe'){
+        this.$message.error("烟雾异常！！！")
+      }
+    }
   },
   methods: {
+    video(){
+      this.$router.push('/video')
+    },
     //这是一个定时
     timer () {
       return setTimeout(() => {
@@ -416,7 +434,7 @@ export default {
       const chartDom = document.getElementById('main');
       const myChart = echarts.init(chartDom);
       //根据传过来的数据更新表
-      // this.drawData();
+      this.drawData();
       //设置数据
       myChart.setOption(this.option);
     },

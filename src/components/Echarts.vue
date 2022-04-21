@@ -2,14 +2,26 @@
   <el-card class="content">
     <h1>图表</h1>
     <!-- 为 ECharts 准备一个定义了宽高的 DOM -->
-    <div id="main" style="width: 500px;height:300px;"></div>
+<!--    <div id="main" style="width: 500px;height:300px;"></div>-->
+    <Video></Video>
   </el-card>
+<!--  <div>-->
+<!--    &lt;!&ndash; 摄像弹窗 &ndash;&gt;-->
+
+
+<!--  </div>-->
 </template>
 
 <script>
 import * as echarts from 'echarts'
+import Video from "@/components/Video";
 export default {
   name: "Echarts",
+  data(){
+    return{
+
+    }
+  },
   mounted() {
     var chartDom = document.getElementById('main');
     var myChart = echarts.init(chartDom);
