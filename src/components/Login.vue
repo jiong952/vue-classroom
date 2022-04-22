@@ -33,8 +33,8 @@ export default {
       loginLoading: false, // 登录限制
       loginForm: {
         // 登录的表单数据的绑定对象
-        username: 'admin',
-        password: '123456'
+        username: '',
+        password: ''
       },
       loginFormRules: {
         // 验证用户名是否合法

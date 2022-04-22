@@ -19,12 +19,6 @@
         <el-col :span="4">
           <el-button type="primary">查询</el-button>
         </el-col>
-        <el-col :span="4">
-          <el-button type="primary" @click="request(1)">请求</el-button>
-        </el-col>
-        <el-col :span="4">
-          <el-button type="primary" @click="send">发送</el-button>
-        </el-col>
       </el-row>
       <!-- 教室数据区域 -->
       <el-table :data="classroomData.classroomList" stripe style="width: 100%" border>

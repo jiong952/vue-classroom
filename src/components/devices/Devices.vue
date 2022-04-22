@@ -4,22 +4,6 @@
     <Breadcrumb name1="设备管理" name2="设备列表" />
     <!-- 卡片视图区域 -->
     <el-card class="box-card">
-      <!-- 搜索区域 -->
-      <el-row :gutter="10">
-        <!-- 教室选择区域 -->
-        <el-col :span="6">
-          <div class="block">
-            <el-cascader
-                :options="options"
-                :props="{ checkStrictly: false }"
-                clearable filterable></el-cascader>
-          </div>
-        </el-col>
-        <!-- 查询区域 -->
-        <el-col :span="4">
-          <el-button type="primary">查询</el-button>
-        </el-col>
-      </el-row>
       <!--echarts图表-->
       <el-row :gutter="10">
         <el-col :span="24" style="padding-left: 0;padding-right: 0">

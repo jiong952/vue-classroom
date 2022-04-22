@@ -101,18 +101,6 @@ export default {
           ]
         },
         {
-          "id": 104,
-          "authName": "设备管理",
-          "path": "devices",
-          "children": [
-            {
-              "id": 1004,
-              "authName": "设备列表",
-              "path": "devices"
-            }
-          ]
-        },
-        {
           "id": 105,
           "authName": "用户管理",
           "path": "users",

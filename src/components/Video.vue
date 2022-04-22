@@ -1,7 +1,6 @@
 <template>
   <div style="height:auto;">
-    <iframe style="width:100%;height:100%;" :src="bdTokenUrl" frameborder="0" scrolling="no" id="bdIframe">
-    </iframe>
+    <iframe src="http://192.168.43.1:8081/video" scrolling="no" frameborder="0" height="100%" id="mainFrame" width="100%" onload='IFrameReSize("mainFrame");IFrameReSizeWidth("mainFrame");'></iframe>
   </div>
 </template>
 
@@ -9,7 +8,7 @@
 
 
 export default {
-  name: 'turnoverfamily',
+  name: 'video',
   data(){
     return{
       bdTokenUrl : 'http://192.168.43.1:8081/video'
@@ -32,16 +31,29 @@ export default {
     oIframe.style.height = (Number(deviceHeight)-120) + 'px'; //数字是页面布局高度差
   },
   methods: {
-    /**
-     * 获取-外部接口信息
-     */
-    getUrl() {
-      let that = this
-      let bdUrl = {queryurl: this.$paths.bdpath+'/locate'};
-      this.$api.getBdToken(bdUrl,function(res) {
-        that.bdTokenUrl = res.data.data;
-      })
+    IFrameReSize(iframename) {
+      var pTar = document.getElementById(iframename);
+      if (pTar) {  //ff
+        if (pTar.contentDocument && pTar.contentDocument.body.offsetHeight) {
+          pTar.height = pTar.contentDocument.body.offsetHeight;
+        } //ie
+        else if (pTar.Document && pTar.Document.body.scrollHeight) {
+          pTar.height = pTar.Document.body.scrollHeight;
+        }
+      }
     },
+    IFrameReSizeWidth(iframename) {
+      var pTar = document.getElementById(iframename);
+      if (pTar) {  //ff
+        if (pTar.contentDocument && pTar.contentDocument.body.offsetWidth) {
+          pTar.width = pTar.contentDocument.body.offsetWidth;
+        }  //ie
+        else if (pTar.Document && pTar.Document.body.scrollWidth) {
+          pTar.width = pTar.Document.body.scrollWidth;
+        }
+      }
+    }
+
   }
 }
 </script>

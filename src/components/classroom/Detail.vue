@@ -171,8 +171,9 @@
               <!--按钮-->
               <el-col :span="24">
                 <el-button type="primary" @click="control"  size="small">控制</el-button>
-                <el-button type="info" @click="exit"  size="small">返回</el-button>
                 <el-button type="primary" @click="video"  size="small">实时监控</el-button>
+                <el-button type="info" @click="exit"  size="small">返回</el-button>
+                <el-button type="info" @click="test"  size="small">测试</el-button>
               </el-col>
             </el-row>
           </el-card>
@@ -234,10 +235,10 @@ export default {
             //[0,1,2,3,4]对应[空座位,坐着,站着,趴着,举手]
             data: [
               { value: 5, name: '空座位'},
-              { value: 8, name: '坐着' },
-              { value: 1, name: '站着' },
-              { value: 3, name: '趴着' },
-              { value: 1, name: '举手' },
+              { value: 0, name: '坐着' },
+              { value: 0, name: '站着' },
+              { value: 0, name: '趴着' },
+              { value: 0, name: '举手' },
             ],
             emphasis: {
               itemStyle: {
@@ -266,9 +267,9 @@ export default {
       //教室的所有状态
       state: {
         //湿度
-        Humidity: 3,
+        Humidity: 56,
         //温度
-        Temperature: 3,
+        Temperature: 26,
         //火灾
         fire_state: "safe",
         //火灾
@@ -355,11 +356,41 @@ export default {
       if(newVal !== 'safe'){
         this.$message.error("烟雾异常！！！")
       }
+    },
+    sleep:function (newVal, oldVal) {
+      if(newVal > 0){
+        this.$confirm('检测当前有学生上课睡觉，是否要发送短信给任课老师', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$message({
+            type: 'success',
+            message: '发送成功!'
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '取消发送'
+          });
+        });
+      }
+    }
+
+  },
+  computed: {
+    sleep: function() {
+      return this.option.series[0].data[3].value
     }
   },
+
   methods: {
+    test(){
+      // this.option.series[0].data[3].value = 1;
+      this.state.fire_state = true;
+    },
     video(){
-      this.$router.push('/video')
+      window.open("http://192.168.43.1:8081/video",'_blank') // 在新窗口打开外链接
     },
     //这是一个定时
     timer () {
