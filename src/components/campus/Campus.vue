@@ -27,11 +27,11 @@
           <template v-slot="scope">
             <!-- 修改按钮 -->
             <el-tooltip effect="dark" content="修改" placement="top" :enterable="false">
-              <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.id)"></el-button>
+              <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.campusId)"></el-button>
             </el-tooltip>
             <!-- 删除按钮 -->
             <el-tooltip effect="dark" content="删除" placement="top" :enterable="false">
-              <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeUserById(scope.row.id)"></el-button>
+              <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeCampusById(scope.row.campusId)"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -100,6 +100,28 @@ export default {
       console.log(newPage)
       this.queryInfo.pagenum = newPage
       this.getCampusList()
+    },
+    async removeCampusById(campusId){
+      // 询问用户是否删除校区
+      const confirmRusult = await this.$confirm('此操作将永久删除该校区, 是否继续?', '永久删除该校区', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+      console.log(confirmRusult)
+      // 用户点击了删除,则返回字符串 confirm
+      // 用户取消了删除,则返回字符串 cancel
+      if (confirmRusult !== 'confirm') {
+        return this.$message.info('已经取消了删除')
+      }
+
+      this.$http.get('http://localhost:8088/campus/delete',{params:{'campusId':campusId}}).then(res => {
+        if (res === false) {
+          return this.$message.error('该校区删除失败')
+        }
+        this.$message.success('该校区已经删除')
+        this.getCampusList()
+      })
     },
   },
   components: {

@@ -10,7 +10,7 @@
         <el-col :span="6">
           <div class="grid-content bg-purple">
             <template>
-              <el-select v-model="queryInfo.query" filterable clearable placeholder="请选择楼宇" size="">
+              <el-select v-model="queryInfo.query" filterable clearable placeholder="请选择教室" size="">
                 <el-option
                     v-for="item in buildingList"
                     :key="item.buildingId"
@@ -56,11 +56,11 @@
           <template v-slot="scope">
             <!-- 修改按钮 -->
             <el-tooltip effect="dark" content="修改" placement="top" :enterable="false">
-              <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.id)"></el-button>
+              <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.classroomId)"></el-button>
             </el-tooltip>
             <!-- 删除按钮 -->
             <el-tooltip effect="dark" content="删除" placement="top" :enterable="false">
-              <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeUserById(scope.row.id)"></el-button>
+              <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeClassroomById(scope.row.classroomId)"></el-button>
             </el-tooltip>
             <!-- 查看按钮 -->
             <el-tooltip effect="dark" content="查看教室信息" placement="top" :enterable="false">
@@ -187,6 +187,28 @@ export default {
         console.log(res);
       }).catch(function (err) {
         console.log(err);
+      })
+    },
+    async removeClassroomById(classroomId){
+      // 询问用户是否删除教室
+      const confirmRusult = await this.$confirm('此操作将永久删除该教室, 是否继续?', '永久删除该教室', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+      console.log(confirmRusult)
+      // 用户点击了删除,则返回字符串 confirm
+      // 用户取消了删除,则返回字符串 cancel
+      if (confirmRusult !== 'confirm') {
+        return this.$message.info('已经取消了删除')
+      }
+
+      this.$http.get('http://localhost:8088/classroom/delete',{params:{'classroomId':classroomId}}).then(res => {
+        if (res === false) {
+          return this.$message.error('该教室删除失败')
+        }
+        this.$message.success('该教室已经删除')
+        this.getClassroomList()
       })
     },
 

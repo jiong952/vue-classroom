@@ -28,7 +28,7 @@
         <el-table-column label="状态">
           <template v-slot="scope">
             <el-switch v-model="scope.row.state"  :inactive-value = 0
-                       :active-value = 1 active-color="#13ce66" inactive-color="#ff4949" @change="userStatuChanged(scope.row)"> </el-switch>
+                       :active-value = 1 active-color="#13ce66" inactive-color="#ff4949" @change="userStatuChanged(scope.row.id,scope.row.state)"> </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180px">
@@ -112,6 +112,49 @@ export default {
       console.log(newPage)
       this.queryInfo.pagenum = newPage
       this.getUserList()
+    },
+    async removeUserById(id) {
+      // 询问用户是否删除用户
+      const confirmRusult = await this.$confirm('此操作将永久删除该用户, 是否继续?', '永久删除该用户', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+      console.log(confirmRusult)
+      // 用户点击了删除,则返回字符串 confirm
+      // 用户取消了删除,则返回字符串 cancel
+      if (confirmRusult !== 'confirm') {
+        return this.$message.info('已经取消了删除')
+      }
+
+      this.$http.get('http://localhost:8088/users/delete',{params:{'id':id}}).then(res => {
+        if (res === false) {
+          return this.$message.error('该用户删除失败')
+        }
+        this.$message.success('该用户已经删除')
+        this.getUserList()
+      })
+    },
+    async userStatuChanged(id,state){
+      // 询问用户是否删除用户
+      // const confirmRusult = await this.$confirm('此操作将使用户失效, 是否继续?', '使用户失效', {
+      //   confirmButtonText: '确定',
+      //   cancelButtonText: '取消',
+      //   type: 'warning'
+      // }).catch(err => err)
+      // console.log(confirmRusult)
+      // // 用户点击了删除,则返回字符串 confirm
+      // // 用户取消了删除,则返回字符串 cancel
+      // if (confirmRusult !== 'confirm') {
+      //   return this.$message.info('已经取消了')
+      // }
+      this.$http.get('http://localhost:8088/users/state',{params:{'id':id,'state':state}}).then(res => {
+        if (res === false) {
+          return this.$message.error('修改状态失败')
+        }
+        this.$message.success('修改状态成功')
+        this.getUserList()
+      })
     },
 
   }
