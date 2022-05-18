@@ -21,13 +21,14 @@
       <!-- 用户列表 -->
       <el-table :data="userData.userList" stripe style="width: 100%" border>
         <el-table-column type="index" label="#"></el-table-column>
-        <el-table-column prop="username" label="姓名" width="100"></el-table-column>
-        <el-table-column prop="email" label="邮箱" width="250"></el-table-column>
-        <el-table-column prop="mobile" label="电话"></el-table-column>
-        <el-table-column prop="role_name" label="角色"></el-table-column>
+        <el-table-column prop="name" label="姓名" width="100"></el-table-column>
+        <el-table-column prop="mail" label="邮箱" width="250"></el-table-column>
+        <el-table-column prop="phone" label="电话"></el-table-column>
+        <el-table-column prop="role" label="角色"></el-table-column>
         <el-table-column label="状态">
           <template v-slot="scope">
-            <el-switch v-model="scope.row.mg_state" active-color="#13ce66" inactive-color="#ff4949" @change="userStatuChanged(scope.row)"> </el-switch>
+            <el-switch v-model="scope.row.state"  :inactive-value = 0
+                       :active-value = 1 active-color="#13ce66" inactive-color="#ff4949" @change="userStatuChanged(scope.row)"> </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180px">
@@ -75,38 +76,7 @@ export default {
       },
       // 存放用户的数据和数量
       userData: {
-        userList: [
-          {
-            "id": 1,
-            "username": "张工",
-            "mobile": "18616358651",
-            "type": 1,
-            "email": "tige112@163.com",
-            "create_time": "2017-11-09T20:36:26.000Z",
-            "mg_state": true, // 当前用户的状态
-            "role_name": "教师管理员"
-          },
-          {
-            "id": 2,
-            "username": "洪俊章",
-            "mobile": "18612458651",
-            "type": 1,
-            "email": "1017328759@163.com",
-            "create_time": "2017-11-09T20:36:26.000Z",
-            "mg_state": true, // 当前用户的状态
-            "role_name": "学生管理员"
-          },
-          {
-            "id": 3,
-            "username": "刘智",
-            "mobile": "19426558651",
-            "type": 1,
-            "email": "zjh1017328759@gmail.com",
-            "create_time": "2017-11-09T20:36:26.000Z",
-            "mg_state": true, // 当前用户的状态
-            "role_name": "教师管理员"
-          }
-        ],
+        userList: [],
         total: 3
       }
     }
@@ -120,22 +90,16 @@ export default {
   },
   methods: {
     //获取用户数据
-    getUserList(){
-      let list = this.userData.userList;
-      let total = this.userData.total;
-      this.userData.userList = list;
-      this.userData.total = total;
+    async getUserList(){
+      const { data: res } = await this.$http.get('http://localhost:8088/users/get', {
+        params: this.queryInfo
+      })
+      if (res === null) {
+        this.$message.error('获取用户列表失败!')
+      }
       this.$message.success('获取用户列表成功!')
-      // const { data: res } = await this.$http.get('users', {
-      //   params: this.queryInfo
-      // })
-      // if (res.meta.status !== 200) {
-      //   this.$message.error('获取用户列表失败!')
-      // }
-      // this.$message.success('获取用户列表成功!')
-      // this.userData.userList = res.data.users
-      // this.userData.total = res.data.total
-      // console.log(res)
+      this.userData.userList = res.userList;
+      this.userData.total = res.total;
     },
     // 监听 pagesize 改变事件 每页显示的个数
     handleSizeChange(newSize) {

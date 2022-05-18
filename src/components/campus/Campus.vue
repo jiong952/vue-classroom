@@ -21,8 +21,8 @@
       <el-table :data="campusData.campusList" stripe style="width: 100%" border>
         <el-table-column type="index" label="#"></el-table-column>
         <el-table-column prop="campusName" label="校区名称"></el-table-column>
-        <el-table-column prop="buildNum" label="楼宇数量"></el-table-column>
-        <el-table-column prop="roomNum" label="教室数量"></el-table-column>
+        <el-table-column prop="buildingCount" label="楼宇数量"></el-table-column>
+        <el-table-column prop="classroomCount" label="教室数量"></el-table-column>
         <el-table-column label="操作" width="180px">
           <template v-slot="scope">
             <!-- 修改按钮 -->
@@ -69,54 +69,38 @@ export default {
       },
       // 存放校区的数据和数量
       campusData: {
-        campusList: [
-          {
-            "id": 1,
-            "campusName": "大学城校区",
-            "buildNum": "38",
-            "roomNum": "268",
-            "create_time": "2017-11-09T20:36:26.000Z",
-          },
-          {
-            "id": 2,
-            "campusName": "龙洞校区",
-            "buildNum": "13",
-            "roomNum": "142",
-            "create_time": "2017-11-09T20:36:26.000Z",
-          },
-          {
-            "id": 3,
-            "campusName": "东风路校区",
-            "buildNum": "20",
-            "roomNum": "200",
-            "create_time": "2017-11-09T20:36:26.000Z",
-          },
-          {
-            "id": 4,
-            "campusName": "番禺校区",
-            "buildNum": "8",
-            "roomNum": "40",
-            "create_time": "2017-11-09T20:36:26.000Z",
-          },
-          {
-            "id": 5,
-            "campusName": "揭阳校区",
-            "buildNum": "10",
-            "roomNum": "60",
-            "create_time": "2017-11-09T20:36:26.000Z",
-          },
-        ],
-        total: 5
+        campusList: [],
+        total: 3
       }
-    }
-  },
-  methods:{
-    getCampusList(){
-      this.$message.success('获取校区列表成功!')
     }
   },
   created() {
     this.getCampusList()
+  },
+  methods:{
+    async getCampusList(){
+      const { data: res } = await this.$http.get('/campus/get', {
+        params: this.queryInfo
+      })
+      if (res === null) {
+        this.$message.error('获取校区列表失败!')
+      }
+      this.$message.success('获取校区列表成功!')
+      this.campusData.campusList = res.campusList;
+      this.campusData.total = res.total;
+    },
+    // 监听 pagesize 改变事件 每页显示的个数
+    handleSizeChange(newSize) {
+      console.log(newSize)
+      this.queryInfo.pagesize = newSize
+      this.getCampusList()
+    },
+    // 监听 页码值 改变的事件 当前页面值
+    handleCurrentChange(newPage) {
+      console.log(newPage)
+      this.queryInfo.pagenum = newPage
+      this.getCampusList()
+    },
   },
   components: {
     //面包屑组件

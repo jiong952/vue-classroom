@@ -7,7 +7,7 @@
         <span>智能教室管理系统</span>
       </div>
       <div>
-        <div style="font-size: medium; padding-right: 15px">admin</div>
+        <div style="font-size: medium; padding-right: 15px" contenteditable="true" v-text="username"></div>
         <el-button type="info" @click="logout">退出</el-button>
       </div>
 
@@ -62,6 +62,7 @@ export default {
   name: "Home.vue",
   data() {
     return {
+      username: '',
       // 左侧菜单数据
       menuList: [
         {
@@ -142,6 +143,7 @@ export default {
     }
   },
   created() {
+    this.username = window.sessionStorage.getItem("username");
     this.getMenuList()
     this.activePath = window.sessionStorage.getItem('activePath')
   },

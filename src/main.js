@@ -15,8 +15,8 @@ import axios from 'axios'
 Vue.config.productionTip = false
 Vue.prototype.$axios = axios
 Vue.prototype.HOME = '/api'
-// axios.defaults.baseURL = 'https://lianghj.top:8888/api/private/v1/'
-// Vue.prototype.$http = axios
+// axios.defaults.baseURL = 'http://localhost:8088'
+Vue.prototype.$http = axios
 axios.interceptors.request.use(config => {
   console.log(config)
   // 登录授权 请求验证是否有token  需要授权的 API ，必须在请求头中使用 `Authorization` 字段提供 `token` 令牌

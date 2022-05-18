@@ -31,7 +31,7 @@
         <el-table-column type="index" label="#"></el-table-column>
         <el-table-column prop="campusName" label="校区"></el-table-column>
         <el-table-column prop="buildingName" label="楼宇编号"></el-table-column>
-        <el-table-column prop="roomNum" label="教室数量"></el-table-column>
+        <el-table-column prop="ClassroomCount" label="教室数量"></el-table-column>
         <el-table-column label="操作" width="180px">
           <template v-slot="scope">
             <!-- 修改按钮 -->
@@ -73,7 +73,7 @@ export default {
         // 当前的页数
         pagenum: 1,
         // 当前每次显示多少条数据
-        pagesize: 6
+        pagesize: 5
       },
       //搜索框数据
       options: [
@@ -95,50 +95,7 @@ export default {
       }],
       campusValue: '',
       buildingData:{
-        buildingList: [
-          {
-            "id": 1,
-            "campusName": "大学城校区",
-            "buildingName": "教学一号楼",
-            "roomNum": "42",
-            "create_time": "2017-11-09T20:36:26.000Z",
-          },
-          {
-            "id": 2,
-            "campusName": "大学城校区",
-            "buildingName": "教学二号楼",
-            "roomNum": "38",
-            "create_time": "2017-11-09T20:36:26.000Z",
-          },
-          {
-            "id": 3,
-            "campusName": "大学城校区",
-            "buildingName": "教学三号楼",
-            "roomNum": "35",
-            "create_time": "2017-11-09T20:36:26.000Z",
-          },
-          {
-            "id": 4,
-            "campusName": "大学城校区",
-            "buildingName": "教学四号楼",
-            "roomNum": "46",
-            "create_time": "2017-11-09T20:36:26.000Z",
-          },
-          {
-            "id": 5,
-            "campusName": "大学城校区",
-            "buildingName": "教学五号楼",
-            "roomNum": "47",
-            "create_time": "2017-11-09T20:36:26.000Z",
-          },
-          {
-            "id": 6,
-            "campusName": "大学城校区",
-            "buildingName": "教学六号楼",
-            "roomNum": "41",
-            "create_time": "2017-11-09T20:36:26.000Z",
-          },
-        ],
+        buildingList: [ ],
         total: 6
       }
     }
@@ -147,20 +104,28 @@ export default {
     this.getBuildingList();
   },
   methods:{
-    getBuildingList(){
+    async getBuildingList(){
+      const { data: res } = await this.$http.get('http://localhost:8088/building/get', {
+        params: this.queryInfo
+      })
+      if (res === null) {
+        this.$message.error('获取楼宇列表失败!')
+      }
       this.$message.success('获取楼宇列表成功!')
+      this.buildingData.buildingList = res.buildingList;
+      this.buildingData.total = res.total;
     },
     // 监听 pagesize 改变事件 每页显示的个数
     handleSizeChange(newSize) {
       console.log(newSize)
       this.queryInfo.pagesize = newSize
-      this.getUserList()
+      this.getBuildingList();
     },
     // 监听 页码值 改变的事件 当前页面值
     handleCurrentChange(newPage) {
       console.log(newPage)
       this.queryInfo.pagenum = newPage
-      this.getUserList()
+      this.getBuildingList();
     },
   },
   components: {

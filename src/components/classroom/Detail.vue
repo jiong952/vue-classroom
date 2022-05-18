@@ -173,7 +173,6 @@
                 <el-button type="primary" @click="control"  size="small">控制</el-button>
                 <el-button type="primary" @click="video"  size="small">实时监控</el-button>
                 <el-button type="info" @click="exit"  size="small">返回</el-button>
-                <el-button type="info" @click="test"  size="small">测试</el-button>
               </el-col>
             </el-row>
           </el-card>
@@ -234,11 +233,11 @@ export default {
             radius: '75%',
             //[0,1,2,3,4]对应[空座位,坐着,站着,趴着,举手]
             data: [
-              { value: 5, name: '空座位'},
-              { value: 0, name: '坐着' },
-              { value: 0, name: '站着' },
-              { value: 0, name: '趴着' },
-              { value: 0, name: '举手' },
+              { value: 0, name: '空座位'},
+              { value: 1, name: '坐着' },
+              { value: 1, name: '站着' },
+              { value: 1, name: '趴着' },
+              { value: 1, name: '举手' },
             ],
             emphasis: {
               itemStyle: {
@@ -278,9 +277,9 @@ export default {
         deep_state: {
           have_person: {
             //教室人数
-            person_nums: 3,
+            person_nums: 4,
             //1区域有没有人
-            area_1: -1,
+            area_1: 1,
             area_2: 1,
             area_3: 1,
             area_4: 1
@@ -465,7 +464,7 @@ export default {
       const chartDom = document.getElementById('main');
       const myChart = echarts.init(chartDom);
       //根据传过来的数据更新表
-      this.drawData();
+      // this.drawData();
       //设置数据
       myChart.setOption(this.option);
     },

@@ -109,10 +109,64 @@ export default {
       await this.send()
     },
     //初始化获得classroom数据
-    getClassroomList(){
-      console.log(this)
-      console.log("获取")
-      this.$message.success('获取楼宇列表成功!')
+    async getClassroomList(){
+      const { data: res } = await this.$http.get('http://localhost:8088/classroom/get', {
+        params: this.queryInfo
+      })
+      if (res === null) {
+        this.$message.error('获取教室列表失败!')
+      }
+      this.$message.success('获取教室列表成功!')
+      console.log(res)
+      console.log(this.$data.state)
+      // for (const classroomListKey in res.classroomList) {
+      //   this.$set(classroomListKey,state, {
+      //     //湿度
+      //     Humidity: 11,
+      //         //温度
+      //         Temperature: 11,
+      //         //火灾
+      //         fire_state: "safe",
+      //         //火灾
+      //         smoke_state: "safe",
+      //         //深度学习状态
+      //         deep_state: {
+      //       have_person: {
+      //         //教室人数
+      //         person_nums: 3,
+      //             //1区域有没有人
+      //             area_1: 3,
+      //             area_2: -1,
+      //             area_3: -1,
+      //             area_4: -1
+      //       },
+      //       person_state: {
+      //         //人物状态
+      //         person_1: 0,
+      //             person_2: 0,
+      //             person_3: 0,
+      //             person_4: 0
+      //       }
+      //     },
+      //     web_state: {
+      //       //为0表示智能模式，为1表示网页控制
+      //       web_ctrl: true,
+      //           ctrl_state: {
+      //         light_state: {
+      //           //灯的状态
+      //           light_1: 1,
+      //               light_2: 1,
+      //               light_3: 1,
+      //               light_4: 1
+      //         },
+      //         //风扇状态
+      //         fan_state: 1
+      //       }
+      //     }
+      //   },)
+      // }
+      this.classroomData.classroomList = res.classroomList
+      this.classroomData.total = res.total
     },
     //测试方法
     test(){
@@ -131,18 +185,18 @@ export default {
     handleSizeChange(newSize) {
       console.log(newSize)
       this.queryInfo.pagesize = newSize
-      this.getUserList()
+      this.getClassroomList();
     },
     // 监听 页码值 改变的事件 当前页面值
     handleCurrentChange(newPage) {
       console.log(newPage)
       this.queryInfo.pagenum = newPage
-      this.getUserList()
+      this.getClassroomList();
     },
     //接受后端数据
     async request(){
       console.log("测试")
-      console.log(this.state)
+      console.log(this.$data.state)
       const url = this.HOME + '/web_get_state';
       await this.$axios({  //this代表vue对象，之前在入口文件中把axios挂载到了vue中，所以这里直接用this.$axios调用axios对象
         method: 'post',
@@ -150,14 +204,14 @@ export default {
       }).then(response => (
           // console.log(response.data)
           //修改对应教室的状态
-          this.state = response.data
+          this.$data.state = response.data
       )).catch(function (err) {
         console.log(err);
       })
       console.log("打印状态")
-      console.log(this.state.web_state.web_ctrl)
+      console.log(this.$data.state.web_state.web_ctrl)
       console.log("打印人数")
-      console.log(this.state.deep_state.have_person.person_nums)
+      console.log(this.$data.state.deep_state.have_person.person_nums)
     },
     //发送后端数据
     async send(){
@@ -339,285 +393,7 @@ export default {
       }, ],
       //教室数据
       classroomData:{
-        classroomList: [
-          {
-            "id": 1,
-            "campusName": "大学城校区",
-            "buildingName": "教学二号楼",
-            "classroomName":"教2-201",
-            "empty_state": 1,
-            "auto_state": true, //true时为智能模式
-            "adminName":"洪俊章",
-            "address": "https://myblogimgbed.oss-cn-shenzhen.aliyuncs.com/img/empty.png",
-            "create_time": "2017-11-09T20:36:26.000Z",
-            state: {
-              //湿度
-              Humidity: 11,
-              //温度
-              Temperature: 11,
-              //火灾
-              fire_state: "safe",
-              //火灾
-              smoke_state: "safe",
-              //深度学习状态
-              deep_state: {
-                have_person: {
-                  //教室人数
-                  person_nums: 0,
-                  //1区域有没有人
-                  area_1: -1,
-                  area_2: -1,
-                  area_3: -1,
-                  area_4: -1
-                },
-                person_state: {
-                  //人物状态
-                  person_1: 0,
-                  person_2: 0,
-                  person_3: 0,
-                  person_4: 0
-                }
-              },
-              web_state: {
-                //为0表示智能模式，为1表示网页控制
-                web_ctrl: false,
-                ctrl_state: {
-                  light_state: {
-                    //灯的状态
-                    light_1: 0,
-                    light_2: 0,
-                    light_3: 0,
-                    light_4: 0
-                  },
-                  //风扇状态
-                  fan_state: 0
-                }
-              }
-            },
-          },
-            //第二个是测试的教室
-          {
-            "id": 2,
-            "campusName": "大学城校区",
-            "buildingName": "教学二号楼",
-            "classroomName":"教2-202",
-            "empty_state": "not_empty",
-            "auto_state": true, //true时为智能模式
-            "adminName":"洪俊章",
-            "address": "https://myblogimgbed.oss-cn-shenzhen.aliyuncs.com/img/not_empty.png",
-            "create_time": "2017-11-09T20:36:26.000Z",
-            state: {
-              //湿度
-              Humidity: 11,
-              //温度
-              Temperature: 11,
-              //火灾
-              fire_state: "safe",
-              //火灾
-              smoke_state: "safe",
-              //深度学习状态
-              deep_state: {
-                have_person: {
-                  //教室人数
-                  person_nums: 1,
-                  //1区域有没有人
-                  area_1: 1,
-                  area_2: -1,
-                  area_3: -1,
-                  area_4: -1
-                },
-                person_state: {
-                  //人物状态
-                  person_1: 0,
-                  person_2: 0,
-                  person_3: 0,
-                  person_4: 0
-                }
-              },
-              web_state: {
-                //为0表示智能模式，为1表示网页控制
-                web_ctrl: true,
-                ctrl_state: {
-                  light_state: {
-                    //灯的状态
-                    light_1: 1,
-                    light_2: 0,
-                    light_3: 0,
-                    light_4: 0
-                  },
-                  //风扇状态
-                  fan_state: 1
-                }
-              }
-            },
-          },
-          {
-            "id": 3,
-            "campusName": "大学城校区",
-            "buildingName": "教学二号楼",
-            "classroomName":"教2-203",
-            "empty_state": "empty",
-            "auto_state": true, //true时为智能模式
-            "adminName":"洪俊章",
-            "address": "https://myblogimgbed.oss-cn-shenzhen.aliyuncs.com/img/empty.png",
-            "create_time": "2017-11-09T20:36:26.000Z",
-            state: {
-              //湿度
-              Humidity: 11,
-              //温度
-              Temperature: 11,
-              //火灾
-              fire_state: "safe",
-              //火灾
-              smoke_state: "safe",
-              //深度学习状态
-              deep_state: {
-                have_person: {
-                  //教室人数
-                  person_nums: 0,
-                  //1区域有没有人
-                  area_1: -1,
-                  area_2: -1,
-                  area_3: -1,
-                  area_4: -1
-                },
-                person_state: {
-                  //人物状态
-                  person_1: 0,
-                  person_2: 0,
-                  person_3: 0,
-                  person_4: 0
-                }
-              },
-              web_state: {
-                //为0表示智能模式，为1表示网页控制
-                web_ctrl: false,
-                ctrl_state: {
-                  light_state: {
-                    //灯的状态
-                    light_1: 0,
-                    light_2: 0,
-                    light_3: 0,
-                    light_4: 0
-                  },
-                  //风扇状态
-                  fan_state: 0
-                }
-              }
-            },
-          },
-          {
-            "id": 4,
-            "campusName": "大学城校区",
-            "buildingName": "教学二号楼",
-            "classroomName":"教2-204",
-            "empty_state": "empty",
-            "auto_state": true, //true时为智能模式
-            "adminName":"洪俊章",
-            "address": "https://myblogimgbed.oss-cn-shenzhen.aliyuncs.com/img/empty.png",
-            "create_time": "2017-11-09T20:36:26.000Z",
-            state: {
-              //湿度
-              Humidity: 11,
-              //温度
-              Temperature: 11,
-              //火灾
-              fire_state: "safe",
-              //火灾
-              smoke_state: "safe",
-              //深度学习状态
-              deep_state: {
-                have_person: {
-                  //教室人数
-                  person_nums: 0,
-                  //1区域有没有人
-                  area_1: -1,
-                  area_2: -1,
-                  area_3: -1,
-                  area_4: -1
-                },
-                person_state: {
-                  //人物状态
-                  person_1: 0,
-                  person_2: 0,
-                  person_3: 0,
-                  person_4: 0
-                }
-              },
-              web_state: {
-                //为0表示智能模式，为1表示网页控制
-                web_ctrl: false,
-                ctrl_state: {
-                  light_state: {
-                    //灯的状态
-                    light_1: 0,
-                    light_2: 0,
-                    light_3: 0,
-                    light_4: 0
-                  },
-                  //风扇状态
-                  fan_state: 0
-                }
-              }
-            },
-          },
-          {
-            "id": 5,
-            "campusName": "大学城校区",
-            "buildingName": "教学二号楼",
-            "classroomName":"教2-205",
-            "empty_state": "empty",
-            "auto_state": true, //true时为智能模式
-            "adminName":"洪俊章",
-            "address": "https://myblogimgbed.oss-cn-shenzhen.aliyuncs.com/img/empty.png",
-            "create_time": "2017-11-09T20:36:26.000Z",
-            state: {
-              //湿度
-              Humidity: 11,
-              //温度
-              Temperature: 11,
-              //火灾
-              fire_state: "safe",
-              //火灾
-              smoke_state: "safe",
-              //深度学习状态
-              deep_state: {
-                have_person: {
-                  //教室人数
-                  person_nums: 0,
-                  //1区域有没有人
-                  area_1: -1,
-                  area_2: -1,
-                  area_3: -1,
-                  area_4: -1
-                },
-                person_state: {
-                  //人物状态
-                  person_1: 0,
-                  person_2: 0,
-                  person_3: 0,
-                  person_4: 0
-                }
-              },
-              web_state: {
-                //为0表示智能模式，为1表示网页控制
-                web_ctrl: false,
-                ctrl_state: {
-                  light_state: {
-                    //灯的状态
-                    light_1: 0,
-                    light_2: 0,
-                    light_3: 0,
-                    light_4: 0
-                  },
-                  //风扇状态
-                  fan_state: 0
-                }
-              }
-            },
-          },
-
-        ],
+        classroomList: [],
         total: 5
       }
       }
