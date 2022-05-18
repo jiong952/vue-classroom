@@ -10,12 +10,12 @@
         <el-col :span="6">
           <div class="grid-content bg-purple">
             <template>
-              <el-select v-model="campusValue" clearable placeholder="请选择校区" size="">
+              <el-select v-model="queryInfo.query" filterable clearable placeholder="请选择校区" size="">
                 <el-option
-                    v-for="item in options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
+                    v-for="item in campusList"
+                    :key="item.campusId"
+                    :label="item.campusName"
+                    :value="item.campusId">
                 </el-option>
               </el-select>
             </template>
@@ -23,7 +23,7 @@
         </el-col>
         <!-- 查询区域 -->
         <el-col :span="4">
-          <el-button type="primary">查询</el-button>
+          <el-button type="primary" @click="getBuildingList">查询</el-button>
         </el-col>
       </el-row>
       <!-- 楼宇数据表格区域 -->
@@ -31,7 +31,7 @@
         <el-table-column type="index" label="#"></el-table-column>
         <el-table-column prop="campusName" label="校区"></el-table-column>
         <el-table-column prop="buildingName" label="楼宇编号"></el-table-column>
-        <el-table-column prop="ClassroomCount" label="教室数量"></el-table-column>
+        <el-table-column prop="classroomCount" label="教室数量"></el-table-column>
         <el-table-column label="操作" width="180px">
           <template v-slot="scope">
             <!-- 修改按钮 -->
@@ -51,7 +51,7 @@
           :current-page="queryInfo.pagenum"
           @size-change="handleSizeChange"
           :page-size="queryInfo.pagesize"
-          :page-sizes="[2, 5, 15]"
+          :page-sizes="[5, 8, 15]"
           layout="total, sizes, prev, pager, next, jumper"
           :total="buildingData.total"
       >
@@ -73,7 +73,7 @@ export default {
         // 当前的页数
         pagenum: 1,
         // 当前每次显示多少条数据
-        pagesize: 5
+        pagesize: 8
       },
       //搜索框数据
       options: [
@@ -93,6 +93,7 @@ export default {
         value: 'campus5',
         label: '揭阳校区'
       }],
+      campusList: [],
       campusValue: '',
       buildingData:{
         buildingList: [ ],
@@ -112,6 +113,7 @@ export default {
         this.$message.error('获取楼宇列表失败!')
       }
       this.$message.success('获取楼宇列表成功!')
+      this.campusList = res.campusList;
       this.buildingData.buildingList = res.buildingList;
       this.buildingData.total = res.total;
     },

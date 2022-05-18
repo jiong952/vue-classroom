@@ -8,8 +8,8 @@
       <el-row :gutter="20">
         <el-col :span="8">
           <!-- 搜索与添加区域 -->
-          <el-input placeholder="请输入内容">
-            <el-button slot="append" icon="el-icon-search"></el-button>
+          <el-input placeholder="请输入内容" clearable v-model="queryInfo.query" @clear="getCampusList">
+            <el-button slot="append" icon="el-icon-search" @click="getCampusList"></el-button>
           </el-input>
         </el-col>
         <el-col :span="4">
@@ -79,7 +79,7 @@ export default {
   },
   methods:{
     async getCampusList(){
-      const { data: res } = await this.$http.get('/campus/get', {
+      const { data: res } = await this.$http.get('http://localhost:8088/campus/get', {
         params: this.queryInfo
       })
       if (res === null) {

@@ -8,16 +8,22 @@
       <el-row :gutter="10">
         <!-- 楼宇选择区域 -->
         <el-col :span="6">
-          <div class="block">
-            <el-cascader
-                :options="options"
-                :props="{ checkStrictly: false }"
-                clearable filterable></el-cascader>
+          <div class="grid-content bg-purple">
+            <template>
+              <el-select v-model="queryInfo.query" filterable clearable placeholder="请选择楼宇" size="">
+                <el-option
+                    v-for="item in buildingList"
+                    :key="item.buildingId"
+                    :label="item.buildingName"
+                    :value="item.buildingId">
+                </el-option>
+              </el-select>
+            </template>
           </div>
         </el-col>
         <!-- 查询区域 -->
         <el-col :span="4">
-          <el-button type="primary">查询</el-button>
+          <el-button type="primary" @click="getClassroomList">查询</el-button>
         </el-col>
       </el-row>
       <!-- 教室数据区域 -->
@@ -84,7 +90,7 @@
           :current-page="queryInfo.pagenum"
           @size-change="handleSizeChange"
           :page-size="queryInfo.pagesize"
-          :page-sizes="[2, 5, 15]"
+          :page-sizes="[5, 8, 15]"
           layout="total, sizes, prev, pager, next, jumper"
           :total="classroomData.total"
       >
@@ -119,52 +125,7 @@ export default {
       this.$message.success('获取教室列表成功!')
       console.log(res)
       console.log(this.$data.state)
-      // for (const classroomListKey in res.classroomList) {
-      //   this.$set(classroomListKey,state, {
-      //     //湿度
-      //     Humidity: 11,
-      //         //温度
-      //         Temperature: 11,
-      //         //火灾
-      //         fire_state: "safe",
-      //         //火灾
-      //         smoke_state: "safe",
-      //         //深度学习状态
-      //         deep_state: {
-      //       have_person: {
-      //         //教室人数
-      //         person_nums: 3,
-      //             //1区域有没有人
-      //             area_1: 3,
-      //             area_2: -1,
-      //             area_3: -1,
-      //             area_4: -1
-      //       },
-      //       person_state: {
-      //         //人物状态
-      //         person_1: 0,
-      //             person_2: 0,
-      //             person_3: 0,
-      //             person_4: 0
-      //       }
-      //     },
-      //     web_state: {
-      //       //为0表示智能模式，为1表示网页控制
-      //       web_ctrl: true,
-      //           ctrl_state: {
-      //         light_state: {
-      //           //灯的状态
-      //           light_1: 1,
-      //               light_2: 1,
-      //               light_3: 1,
-      //               light_4: 1
-      //         },
-      //         //风扇状态
-      //         fan_state: 1
-      //       }
-      //     }
-      //   },)
-      // }
+      this.buildingList = res.buildingList;
       this.classroomData.classroomList = res.classroomList
       this.classroomData.total = res.total
     },
@@ -249,7 +210,7 @@ export default {
         // 当前的页数
         pagenum: 1,
         // 当前每次显示多少条数据
-        pagesize: 5
+        pagesize: 8
       },
       //校区选项
       campusValue: '',
@@ -391,6 +352,7 @@ export default {
         value: 'campus5',
         label: '揭阳校区',
       }, ],
+      buildingList: [],
       //教室数据
       classroomData:{
         classroomList: [],
