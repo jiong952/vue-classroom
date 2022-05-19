@@ -39,7 +39,7 @@
         <el-table-column label="操作" width="180px">
           <template v-slot="scope">
             <!-- 修改按钮 -->
-            <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.id)"></el-button>
+            <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row)"></el-button>
             <!-- 删除按钮 -->
             <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeUserById(scope.row.id)"></el-button>
             <!-- 分配角色按钮 -->
@@ -89,17 +89,25 @@
     </el-dialog>
     <!-- 修改用户信息对话框 -->
     <el-dialog title="修改用户" @close="updateClosed" :visible.sync="updateDialogVisble" width="50%">
-      <el-form :model="updateForm" :rules="updateFormRules" ref="updateFormRef" label-width="70px">
-        <el-form-item label="用户名">
-          <el-input v-model="updateForm.username" disabled></el-input>
+      <!-- 内容主题区域 -->
+      <el-form label-width="70px" ref="updateFormRef" :model="updateForm" :rules="addFormRules">
+        <el-form-item label="姓名" prop="name">
+          <el-input v-model="updateForm.name"></el-input>
         </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="updateForm.email"></el-input>
+        <el-form-item label="邮箱" prop="mail">
+          <el-input v-model="updateForm.mail"></el-input>
         </el-form-item>
-        <el-form-item label="手机" prop="mobile">
-          <el-input v-model="updateForm.mobile"></el-input>
+        <el-form-item label="角色" prop="role">
+          <el-radio-group v-model="updateForm.role">
+            <el-radio label= '1' border>学生管理员</el-radio>
+            <el-radio label= '2' border>教师管理员</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="手机" prop="phone">
+          <el-input v-model="updateForm.phone"></el-input>
         </el-form-item>
       </el-form>
+      <!-- 底部按钮区域 -->
       <span slot="footer" class="dialog-footer">
         <el-button @click="updateDialogVisble = false">取 消</el-button>
         <el-button type="primary" @click="updateUser">确 定</el-button>
@@ -157,9 +165,13 @@ export default {
         total: 3
       },
       //修改用户表单
-      updateForm:{},
-      //修改用户的校验规则
-      updateFormRules:{},
+      updateForm:{
+        id:'',
+        name: '',
+        role: '',
+        mail: '',
+        phone: ''
+      },
 
     }
   },
@@ -171,6 +183,15 @@ export default {
     this.getUserList()
   },
   methods: {
+    //显示修改页面
+    showEditDialog(row){
+      this.updateForm.id = row.id;
+      this.updateForm.name = row.name;
+      this.updateForm.role = row.role.toString();
+      this.updateForm.mail = row.mail;
+      this.updateForm.phone = row.phone;
+      this.updateDialogVisble = true;
+    },
     //提交增加用户表单
     addUser(){
       this.$refs.addFormRef.validate(async valid => {
@@ -199,7 +220,20 @@ export default {
       this.$refs.updateFormRef.resetFields();
     },
     //修改用户按钮提交
-    updateUser(){},
+    updateUser(){
+      this.$refs.updateFormRef.validate(async valid => {
+        console.log(valid)
+        if (!valid) return
+        // 发起修改用户信息的数据请求
+        const { data: res } = await this.$http.get('http://localhost:8088/users/update',{params:this.updateForm})
+        if (res === false) {
+          this.$message.error('更新用户信息失败!')
+        }
+        this.updateDialogVisble = false
+        this.getUserList()
+        this.$message.success('更新用户信息成功!')
+      })
+    },
     //获取用户数据
     async getUserList(){
       const { data: res } = await this.$http.get('http://localhost:8088/users/get', {
