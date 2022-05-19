@@ -25,7 +25,7 @@
         <el-col :span="4">
           <div class="grid-content bg-purple">
             <template>
-              <el-select v-model="queryInfo.query" filterable clearable placeholder="请选择楼宇" size="">
+              <el-select v-model="queryInfo.query" filterable clearable @clear="getClassroomList" placeholder="请选择楼宇" size="">
                 <el-option
                     v-for="item in buildingList"
                     :key="item.buildingId"

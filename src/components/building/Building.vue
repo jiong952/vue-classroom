@@ -5,12 +5,12 @@
     <!-- 卡片视图区域 -->
     <el-card class="box-card">
       <!-- 搜索区域 -->
-      <el-row :gutter="2">
+      <el-row :gutter="3">
         <!-- 校区选择区域 -->
-        <el-col :span="6">
+        <el-col :span="4">
           <div class="grid-content bg-purple">
             <template>
-              <el-select v-model="queryInfo.query" filterable clearable placeholder="请选择校区" size="">
+              <el-select v-model="queryInfo.query" filterable clearable @clear="getBuildingList" placeholder="请选择校区" size="">
                 <el-option
                     v-for="item in campusList"
                     :key="item.campusId"

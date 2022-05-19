@@ -42,10 +42,6 @@
             <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row)"></el-button>
             <!-- 删除按钮 -->
             <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeUserById(scope.row.id)"></el-button>
-            <!-- 分配角色按钮 -->
-            <el-tooltip effect="dark" content="分配角色" placement="top" :enterable="false">
-              <el-button type="warning" icon="el-icon-setting" size="mini" @click="setRoles(scope.row)"></el-button>
-            </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
@@ -281,18 +277,6 @@ export default {
       })
     },
     async userStatuChanged(id,state){
-      // 询问用户是否删除用户
-      // const confirmRusult = await this.$confirm('此操作将使用户失效, 是否继续?', '使用户失效', {
-      //   confirmButtonText: '确定',
-      //   cancelButtonText: '取消',
-      //   type: 'warning'
-      // }).catch(err => err)
-      // console.log(confirmRusult)
-      // // 用户点击了删除,则返回字符串 confirm
-      // // 用户取消了删除,则返回字符串 cancel
-      // if (confirmRusult !== 'confirm') {
-      //   return this.$message.info('已经取消了')
-      // }
       this.$http.get('http://localhost:8088/users/state',{params:{'id':id,'state':state}}).then(res => {
         if (res === false) {
           return this.$message.error('修改状态失败')
