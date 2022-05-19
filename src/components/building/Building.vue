@@ -5,8 +5,8 @@
     <!-- 卡片视图区域 -->
     <el-card class="box-card">
       <!-- 搜索区域 -->
-      <el-row :gutter="3">
-        <!-- 校区选择区域 -->
+      <el-row :gutter="2">
+        <!-- 校区选择下拉列表 -->
         <el-col :span="4">
           <div class="grid-content bg-purple">
             <template>
@@ -25,6 +25,10 @@
         <el-col :span="4">
           <el-button type="primary" @click="getBuildingList">查询</el-button>
         </el-col>
+        <!-- 查询区域 -->
+        <el-col :span="3">
+          <el-button type="primary" @click="addDialogVisible = true">新增楼宇</el-button>
+        </el-col>
       </el-row>
       <!-- 楼宇数据表格区域 -->
       <el-table :data="buildingData.buildingList" stripe style="width: 100%" border>
@@ -36,7 +40,7 @@
           <template v-slot="scope">
             <!-- 修改按钮 -->
             <el-tooltip effect="dark" content="修改" placement="top" :enterable="false">
-              <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.buildingId)"></el-button>
+              <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row)"></el-button>
             </el-tooltip>
             <!-- 删除按钮 -->
             <el-tooltip effect="dark" content="删除" placement="top" :enterable="false">
@@ -57,6 +61,58 @@
       >
       </el-pagination>
     </el-card>
+    <!-- 添加楼宇对话框 -->
+    <el-dialog title="添加楼宇" :visible.sync="addDialogVisible" width="50%" @close="addDislogClosed">
+      <!-- 内容主题区域 -->
+      <el-form label-width="70px" ref="addFormRef" :model="addForm" :rules="addFormRules">
+        <el-form-item label="校区名" prop="campusId">
+          <template>
+            <el-select v-model="addForm.campusId" filterable clearable placeholder="请选择校区" size="">
+              <el-option
+                  v-for="item in campusList"
+                  :key="item.campusId"
+                  :label="item.campusName"
+                  :value="item.campusId">
+              </el-option>
+            </el-select>
+          </template>
+        </el-form-item>
+        <el-form-item label="楼宇名" prop="buildingName">
+          <el-input v-model="addForm.buildingName"></el-input>
+        </el-form-item>
+      </el-form>
+      <!-- 底部按钮区域 -->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addBuilding">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 修改校区对话框 -->
+    <el-dialog title="修改楼宇" :visible.sync="updateDialogVisible" width="50%" @close="updateDislogClosed">
+      <!-- 内容主题区域 -->
+      <el-form label-width="70px" ref="updateFormRef" :model="updateForm" :rules="addFormRules">
+        <el-form-item label="校区名" prop="campusId">
+          <template>
+            <el-select v-model="updateForm.campusId" filterable clearable placeholder="请选择校区" size="">
+              <el-option
+                  v-for="item in campusList"
+                  :key="item.campusId"
+                  :label="item.campusName"
+                  :value="item.campusId">
+              </el-option>
+            </el-select>
+          </template>
+        </el-form-item>
+        <el-form-item label="楼宇名" prop="buildingName">
+          <el-input v-model="updateForm.buildingName"></el-input>
+        </el-form-item>
+      </el-form>
+      <!-- 底部按钮区域 -->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="updateDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="updateBuilding">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -66,6 +122,30 @@ export default {
   name: "Building",
   data() {
     return {
+      //控制修改表单
+      updateDialogVisible:false,
+      //修改表单
+      updateForm:{
+        buildingId:'',
+        campusId:'',
+        buildingName:'',
+      },
+      //增加表单校验规则
+      addFormRules: {
+        campusId:[
+          { pattern: /^(\-|\+)?\d+?$/, required: true, message: '校区不可为空', trigger: 'blur' }
+        ],
+        buildingName:[
+          { required: true, message: '请输入楼宇名', trigger: 'blur' }
+        ],
+      },
+      //增加框表单内容
+      addForm:{
+        campusId:'',
+        buildingName:'',
+      },
+      //控制增加框
+      addDialogVisible: false,
       // 获取用户列表的参数对象
       queryInfo: {
         // 搜索值
@@ -105,6 +185,56 @@ export default {
     this.getBuildingList();
   },
   methods:{
+    //修改楼宇
+    updateBuilding(){
+      this.$refs.updateFormRef.validate(async valid => {
+        console.log(valid)
+        if (!valid) return
+        // 发起修改用户信息的数据请求
+        const { data: res } = await this.$http.get('http://localhost:8088/building/update',{params:this.updateForm})
+        if (res === false) {
+          this.$message.error('更新楼宇信息失败!')
+        }
+        this.updateDialogVisible = false;
+        this.getBuildingList()
+        this.$message.success('更新楼宇信息成功!')
+      })
+    },
+    // 监听修改楼宇的对话框关闭事件
+    updateDislogClosed(){
+      this.$refs.updateFormRef.resetFields();
+    },
+    //点击修改按钮事件
+    showEditDialog(row){
+      this.updateForm.buildingId = row.buildingId;
+      this.updateForm.campusId = row.campusId;
+      this.updateForm.buildingName = row.buildingName;
+      this.updateDialogVisible = true;
+    },
+    //添加楼宇方法
+    addBuilding(){
+      this.$refs.addFormRef.validate(async valid => {
+        console.log(valid)
+        if (!valid) return
+        // 可以发起添加用户请求
+        const { data: res } = await this.$http.get('http://localhost:8088/building/add',{
+          params:this.addForm
+        } )
+        if (res === false) {
+          return this.$message.error('楼宇添加失败了~')
+        }
+        // 隐藏添加用户的对话框
+        this.addDialogVisible = false
+        // 添加成后重新获取用户数据,不需要用户手动刷新
+        this.getBuildingList()
+        return this.$message.success('楼宇添加成功了~')
+      })
+    },
+    // 监听添加楼宇的对话框关闭事件
+    addDislogClosed(){
+      this.$refs.addFormRef.resetFields()
+    },
+    //获取楼宇列表
     async getBuildingList(){
       const { data: res } = await this.$http.get('http://localhost:8088/building/get', {
         params: this.queryInfo
