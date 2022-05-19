@@ -25,7 +25,7 @@
         <el-col :span="4">
           <el-button type="primary" @click="getBuildingList">查询</el-button>
         </el-col>
-        <!-- 查询区域 -->
+        <!-- 增加区域 -->
         <el-col :span="3">
           <el-button type="primary" @click="addDialogVisible = true">新增楼宇</el-button>
         </el-col>

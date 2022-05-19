@@ -40,6 +40,10 @@
         <el-col :span="4">
           <el-button type="primary" @click="getClassroomList">查询</el-button>
         </el-col>
+        <!-- 增加区域 -->
+        <el-col :span="3">
+          <el-button type="primary" @click="addDialogVisible = true">新增楼宇</el-button>
+        </el-col>
       </el-row>
       <!-- 教室数据区域 -->
       <el-table :data="classroomData.classroomList" stripe style="width: 100%" border>
@@ -71,7 +75,7 @@
           <template v-slot="scope">
             <!-- 修改按钮 -->
             <el-tooltip effect="dark" content="修改" placement="top" :enterable="false">
-              <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.classroomId)"></el-button>
+              <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row)"></el-button>
             </el-tooltip>
             <!-- 删除按钮 -->
             <el-tooltip effect="dark" content="删除" placement="top" :enterable="false">
@@ -84,22 +88,7 @@
           </template>
         </el-table-column>
       </el-table>
-<!--      已废弃-->
-<!--      <el-dialog-->
-<!--          :visible.sync="showClassroomSate"-->
-<!--          width="15%"-->
-<!--      >-->
-<!--        <el-descriptions title="教室信息" :column="1">-->
-<!--          <el-descriptions-item label="湿度" span="1">{{this.classroomData.classroomList[1].state.Humidity}}</el-descriptions-item>-->
-<!--          <el-descriptions-item label="温度">{{this.classroomData.classroomList[1].state.Temperature}}</el-descriptions-item>-->
-<!--          <el-descriptions-item label="火灾情况">{{this.classroomData.classroomList[1].state.fire_state === "safe" ? "安全":"火灾发生" }}</el-descriptions-item>-->
-<!--          <el-descriptions-item label="烟雾情况">{{this.classroomData.classroomList[1].state.smoke_state === "safe" ? "安全":"烟雾危害"}}</el-descriptions-item>-->
-<!--          <el-descriptions-item label="教室总人数">{{this.classroomData.classroomList[1].state.deep_state.have_person.person_nums}}</el-descriptions-item>-->
-<!--        </el-descriptions>-->
-<!--        <span slot="footer" class="dialog-footer">-->
-<!--  </span>-->
-<!--      </el-dialog>-->
-      <!-- 分页 -->
+
       <el-pagination
           @current-change="handleCurrentChange"
           :current-page="queryInfo.pagenum"
@@ -111,7 +100,106 @@
       >
       </el-pagination>
     </el-card>
-
+    <!-- 添加教室对话框 -->
+    <el-dialog title="添加教室" :visible.sync="addDialogVisible" width="50%" @close="addDislogClosed">
+      <!-- 内容主题区域 -->
+      <el-form label-width="70px" ref="addFormRef" :model="addForm" :rules="addFormRules">
+        <el-form-item label="校区名" prop="campusId">
+          <template>
+            <el-select v-model="campus" filterable clearable placeholder="请选择校区" size="">
+              <el-option
+                  v-for="item in campusList"
+                  :key="item.campusId"
+                  :label="item.campusName"
+                  :value="item.campusId">
+              </el-option>
+            </el-select>
+          </template>
+        </el-form-item>
+        <el-form-item label="楼宇名" prop="buildingId">
+          <template>
+            <el-select v-model="addForm.buildingId" filterable clearable placeholder="请选择楼宇" size="">
+              <el-option
+                  v-for="item in buildingList"
+                  :key="item.buildingId"
+                  :label="item.buildingName"
+                  :value="item.buildingId">
+              </el-option>
+            </el-select>
+          </template>
+        </el-form-item>
+        <el-form-item label="管理员" prop="adminId">
+          <template>
+            <el-select v-model="addForm.adminId" filterable clearable placeholder="请选择管理员" size="">
+              <el-option
+                  v-for="item in userList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+              </el-option>
+            </el-select>
+          </template>
+        </el-form-item>
+        <el-form-item label="教室名" prop="classroomName">
+          <el-input v-model="addForm.classroomName"></el-input>
+        </el-form-item>
+      </el-form>
+      <!-- 底部按钮区域 -->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addClassroom">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 修改教室对话框 -->
+    <el-dialog title="修改教室" :visible.sync="updateDialogVisible" width="50%" @close="updateDislogClosed">
+      <!-- 内容主题区域 -->
+      <el-form label-width="70px" ref="updateFormRef" :model="updateForm" :rules="addFormRules">
+        <el-form-item label="校区名" prop="campusId">
+          <template>
+            <el-select v-model="campus2" filterable clearable placeholder="请选择校区" size="">
+              <el-option
+                  v-for="item in campusList"
+                  :key="item.campusId"
+                  :label="item.campusName"
+                  :value="item.campusId">
+              </el-option>
+            </el-select>
+          </template>
+        </el-form-item>
+        <el-form-item label="楼宇名" prop="buildingId">
+          <template>
+            <el-select v-model="updateForm.buildingId" filterable clearable placeholder="请选择楼宇" size="">
+              <el-option
+                  v-for="item in buildingList"
+                  :key="item.buildingId"
+                  :label="item.buildingName"
+                  :value="item.buildingId">
+              </el-option>
+            </el-select>
+          </template>
+        </el-form-item>
+        <el-form-item label="管理员" prop="adminId">
+          <template>
+            <el-select v-model="updateForm.adminId" filterable clearable placeholder="请选择管理员" size="">
+              <el-option
+                  v-for="item in userList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+              </el-option>
+            </el-select>
+          </template>
+        </el-form-item>
+        <el-form-item label="教室名" prop="classroomName">
+          <el-input v-model="updateForm.classroomName"></el-input>
+        </el-form-item>
+      </el-form>
+      <!-- 底部按钮区域 -->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="updateDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="updateClassroom">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -120,6 +208,59 @@ import Breadcrumb from "@/components/breadcrumb/Breadcrumb";
 export default {
   name: "Classroom",
   methods: {
+    //修改楼宇
+    updateClassroom(){
+      this.$refs.updateFormRef.validate(async valid => {
+        console.log(valid)
+        if (!valid) return
+        // 发起修改用户信息的数据请求
+        const { data: res } = await this.$http.get('http://localhost:8088/classroom/update',{params:this.updateForm})
+        if (res === false) {
+          this.$message.error('更新教室信息失败!')
+          return
+        }
+        this.updateDialogVisible = false;
+        this.getClassroomList()
+        // this.$message.success('更新教室信息成功!')
+      })
+    },
+    // 监听修改楼宇的对话框关闭事件
+    updateDislogClosed(){
+      this.$refs.updateFormRef.resetFields();
+    },
+    //点击修改按钮事件
+    showEditDialog(row){
+      this.campus2 = row.campusId;
+      this.updateForm.classroomId = row.classroomId
+      this.updateForm.buildingId = row.buildingId;
+      this.updateForm.campusId = row.campusId;
+      this.updateForm.classroomName = row.classroomName;
+      this.updateForm.adminId = row.adminId
+      this.updateDialogVisible = true;
+    },
+    //添加楼宇方法
+    addClassroom(){
+      this.$refs.addFormRef.validate(async valid => {
+        console.log(valid)
+        if (!valid) return
+        // 可以发起添加用户请求
+        const { data: res } = await this.$http.get('http://localhost:8088/classroom/add',{
+          params:this.addForm
+        } )
+        if (res === false) {
+          return this.$message.error('教室添加失败了~')
+        }
+        // 隐藏添加用户的对话框
+        this.addDialogVisible = false
+        // 添加成后重新获取用户数据,不需要用户手动刷新
+        this.getClassroomList()
+        return this.$message.success('教室添加成功了~')
+      })
+    },
+    // 监听添加楼宇的对话框关闭事件
+    addDislogClosed(){
+      this.$refs.addFormRef.resetFields()
+    },
     //智能模式切换调用send方法
     async switchChange(val) {
       console.log(val)
@@ -140,6 +281,7 @@ export default {
       this.$message.success('获取教室列表成功!')
       console.log(res)
       this.campusList = res.campusList;
+      this.userList = res.userList
       if(res.total === 0){
         this.classroomData.classroomList = []
         this.classroomData.total = 0
@@ -234,10 +376,46 @@ export default {
   },
   //定时器更新state
   async mounted() {
-    // setInterval(()=>this.request(), 1000);
+    // setInterval(console.log(this.addForm), 5000);
   },
   data(){
     return{
+      campus2:'',
+      campus:'',
+      //控制修改表单
+      updateDialogVisible:false,
+      //修改表单
+      updateForm:{
+        classroomId:'',
+        campusId:'',
+        buildingId:'',
+        adminId:'',
+        classroomName:'',
+      },
+      //增加表单校验规则
+      addFormRules: {
+        campusId:[
+          { pattern: /^(\-|\+)?\d+?$/, required: true, message: '校区不可为空', trigger: 'blur' }
+        ],
+        buildingId:[
+          { pattern: /^(\-|\+)?\d+?$/, required: true, message: '楼宇不可为空', trigger: 'blur' }
+        ],
+        adminId:[
+          { pattern: /^(\-|\+)?\d+?$/, required: true, message: '管理员不可为空', trigger: 'blur' }
+        ],
+        classroomName:[
+          { required: true, message: '请输入教室名', trigger: 'blur' }
+        ],
+      },
+      //增加框表单内容
+      addForm:{
+        campusId:'',
+        buildingId:'',
+        adminId:'',
+        classroomName:'',
+      },
+      //控制增加框
+      addDialogVisible: false,
       //封装返回给后台的state
       state_s: {
         web_state:{}
@@ -395,6 +573,7 @@ export default {
       }, ],
       buildingList: [],
       campusList:[],
+      userList:[],
       //教室数据
       classroomData:{
         classroomList: [],
@@ -426,7 +605,29 @@ export default {
           }
         }
       }
-    }
+    },
+    'campus':{
+      handler(nval, oval){
+        this.addForm.campusId = nval
+        this.addForm.buildingId = '';
+        for (let i = 0; i < this.$data.campusList.length; i++) {
+          if(nval === this.$data.campusList[i].campusId){
+            this.$data.buildingList = this.$data.campusList[i].buildingList;
+            break;
+          }
+        }
+      }
+    },
+    'campus2':{
+      handler(nval, oval){
+        for (let i = 0; i < this.$data.campusList.length; i++) {
+          if(nval === this.$data.campusList[i].campusId){
+            this.$data.buildingList = this.$data.campusList[i].buildingList;
+            break;
+          }
+        }
+      }
+    },
   }
 }
 </script>
