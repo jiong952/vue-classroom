@@ -14,7 +14,7 @@
         </el-col>
         <el-col :span="4">
           <!-- 添加用户区域 -->
-          <el-button type="primary">添加用户</el-button>
+          <el-button type="primary" @click="addDialogVisible = true">添加用户</el-button>
         </el-col>
       </el-row>
       <!-- 用户数据表格区域 -->
@@ -24,7 +24,12 @@
         <el-table-column prop="name" label="姓名" width="100"></el-table-column>
         <el-table-column prop="mail" label="邮箱" width="250"></el-table-column>
         <el-table-column prop="phone" label="电话"></el-table-column>
-        <el-table-column prop="role" label="角色"></el-table-column>
+        <el-table-column label="角色">
+          <template slot-scope="scope">
+            <span v-if="scope.row.role === 1">学生管理员</span>
+            <span v-else>教师管理员</span>
+          </template>
+        </el-table-column>
         <el-table-column label="状态">
           <template v-slot="scope">
             <el-switch v-model="scope.row.state"  :inactive-value = 0
@@ -56,6 +61,50 @@
       >
       </el-pagination>
     </el-card>
+    <!-- 添加用户对话框 -->
+    <el-dialog title="添加用户" :visible.sync="addDialogVisible" width="50%" @close="addDislogClosed">
+      <!-- 内容主题区域 -->
+      <el-form label-width="70px" ref="addFormRef" :model="addForm" :rules="addFormRules">
+        <el-form-item label="姓名" prop="name">
+          <el-input v-model="addForm.name"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="mail">
+          <el-input v-model="addForm.mail"></el-input>
+        </el-form-item>
+        <el-form-item label="角色" prop="role">
+          <el-radio-group v-model="addForm.role">
+            <el-radio label= '1' border>学生管理员</el-radio>
+            <el-radio label= '2' border>教师管理员</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="手机" prop="phone">
+          <el-input v-model="addForm.phone"></el-input>
+        </el-form-item>
+      </el-form>
+      <!-- 底部按钮区域 -->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addUser">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 修改用户信息对话框 -->
+    <el-dialog title="修改用户" @close="updateClosed" :visible.sync="updateDialogVisble" width="50%">
+      <el-form :model="updateForm" :rules="updateFormRules" ref="updateFormRef" label-width="70px">
+        <el-form-item label="用户名">
+          <el-input v-model="updateForm.username" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="updateForm.email"></el-input>
+        </el-form-item>
+        <el-form-item label="手机" prop="mobile">
+          <el-input v-model="updateForm.mobile"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="updateDialogVisble = false">取 消</el-button>
+        <el-button type="primary" @click="updateUser">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -65,6 +114,34 @@ export default {
   name: "User",
   data() {
     return {
+      // 控制添加用户对话框的显示和隐藏
+      addDialogVisible: false,
+      // 添加用户数据的表单对象
+      addForm: {
+        name: '',
+        role: '',
+        mail: '',
+        phone: ''
+      },
+      //增加用户的校验规则
+      addFormRules:{
+        name:[
+          { required: true, message: '请输入用户姓名', trigger: 'blur' }
+        ],
+        mail: [
+          {type: 'email',message: '请输入正确的邮箱地址', trigger: ['blur', 'change']}
+        ],
+        role: [
+          { required: true, message: '请选择角色', trigger: ['blur', 'change'] }
+        ],
+        phone: [
+            { pattern: /^(13[0-9]|14[01456879]|15[0-3,5-9]|16[2567]|17[0-8]|18[0-9]|19[0-3,5-9])\d{8}$/,
+              message: '请输入正确的手机号',
+              trigger: 'blur'}
+        ]
+      },
+      // 控制修改用户对话框的显示和隐藏
+      updateDialogVisble:false,
       // 获取用户列表的参数对象
       queryInfo: {
         // 搜索值
@@ -78,7 +155,12 @@ export default {
       userData: {
         userList: [],
         total: 3
-      }
+      },
+      //修改用户表单
+      updateForm:{},
+      //修改用户的校验规则
+      updateFormRules:{},
+
     }
   },
   components: {
@@ -89,6 +171,35 @@ export default {
     this.getUserList()
   },
   methods: {
+    //提交增加用户表单
+    addUser(){
+      this.$refs.addFormRef.validate(async valid => {
+        console.log(valid)
+        if (!valid) return
+        // 可以发起添加用户请求
+        const { data: res } = await this.$http.get('http://localhost:8088/users/add',{
+          params:this.addForm
+        } )
+        if (res === false) {
+          return this.$message.error('用户添加失败了~')
+        }
+        // 隐藏添加用户的对话框
+        this.addDialogVisible = false
+        // 添加成后重新获取用户数据,不需要用户手动刷新
+        this.getUserList()
+        return this.$message.success('用户添加成功了~')
+      })
+    },
+    // 监听添加用户的对话框关闭事件
+    addDislogClosed(){
+      this.$refs.addFormRef.resetFields()
+    },
+    // 监听修改用户对话框的关闭事件
+    updateClosed(){
+      this.$refs.updateFormRef.resetFields();
+    },
+    //修改用户按钮提交
+    updateUser(){},
     //获取用户数据
     async getUserList(){
       const { data: res } = await this.$http.get('http://localhost:8088/users/get', {

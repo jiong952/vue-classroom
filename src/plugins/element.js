@@ -45,9 +45,10 @@ import {
     DescriptionsItem,
     Carousel,
     CarouselItem,
-    Radio
+    Radio, RadioGroup
 } from 'element-ui'
 Vue.use(Radio)
+Vue.use(RadioGroup)
 Vue.use(CarouselItem)
 Vue.use(Carousel)
 Vue.use(Descriptions)

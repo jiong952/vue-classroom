@@ -5,12 +5,27 @@
     <!-- 卡片视图区域 -->
     <el-card class="box-card">
       <!-- 搜索区域 -->
-      <el-row :gutter="10">
-        <!-- 楼宇选择区域 -->
-        <el-col :span="6">
+      <el-row :gutter="3">
+        <!-- 校区选择区域 -->
+        <el-col :span="4">
           <div class="grid-content bg-purple">
             <template>
-              <el-select v-model="queryInfo.query" filterable clearable placeholder="请选择教室" size="">
+              <el-select v-model="campusValue" filterable clearable placeholder="请选择校区" size="">
+                <el-option
+                    v-for="item in campusList"
+                    :key="item.campusId"
+                    :label="item.campusName"
+                    :value="item.campusId">
+                </el-option>
+              </el-select>
+            </template>
+          </div>
+        </el-col>
+        <!-- 楼宇选择区域 -->
+        <el-col :span="4">
+          <div class="grid-content bg-purple">
+            <template>
+              <el-select v-model="queryInfo.query" filterable clearable placeholder="请选择楼宇" size="">
                 <el-option
                     v-for="item in buildingList"
                     :key="item.buildingId"
@@ -70,20 +85,20 @@
         </el-table-column>
       </el-table>
 <!--      已废弃-->
-      <el-dialog
-          :visible.sync="showClassroomSate"
-          width="15%"
-      >
-        <el-descriptions title="教室信息" :column="1">
-          <el-descriptions-item label="湿度" span="1">{{this.classroomData.classroomList[1].state.Humidity}}</el-descriptions-item>
-          <el-descriptions-item label="温度">{{this.classroomData.classroomList[1].state.Temperature}}</el-descriptions-item>
-          <el-descriptions-item label="火灾情况">{{this.classroomData.classroomList[1].state.fire_state === "safe" ? "安全":"火灾发生" }}</el-descriptions-item>
-          <el-descriptions-item label="烟雾情况">{{this.classroomData.classroomList[1].state.smoke_state === "safe" ? "安全":"烟雾危害"}}</el-descriptions-item>
-          <el-descriptions-item label="教室总人数">{{this.classroomData.classroomList[1].state.deep_state.have_person.person_nums}}</el-descriptions-item>
-        </el-descriptions>
-        <span slot="footer" class="dialog-footer">
-  </span>
-      </el-dialog>
+<!--      <el-dialog-->
+<!--          :visible.sync="showClassroomSate"-->
+<!--          width="15%"-->
+<!--      >-->
+<!--        <el-descriptions title="教室信息" :column="1">-->
+<!--          <el-descriptions-item label="湿度" span="1">{{this.classroomData.classroomList[1].state.Humidity}}</el-descriptions-item>-->
+<!--          <el-descriptions-item label="温度">{{this.classroomData.classroomList[1].state.Temperature}}</el-descriptions-item>-->
+<!--          <el-descriptions-item label="火灾情况">{{this.classroomData.classroomList[1].state.fire_state === "safe" ? "安全":"火灾发生" }}</el-descriptions-item>-->
+<!--          <el-descriptions-item label="烟雾情况">{{this.classroomData.classroomList[1].state.smoke_state === "safe" ? "安全":"烟雾危害"}}</el-descriptions-item>-->
+<!--          <el-descriptions-item label="教室总人数">{{this.classroomData.classroomList[1].state.deep_state.have_person.person_nums}}</el-descriptions-item>-->
+<!--        </el-descriptions>-->
+<!--        <span slot="footer" class="dialog-footer">-->
+<!--  </span>-->
+<!--      </el-dialog>-->
       <!-- 分页 -->
       <el-pagination
           @current-change="handleCurrentChange"
@@ -124,10 +139,14 @@ export default {
       }
       this.$message.success('获取教室列表成功!')
       console.log(res)
-      console.log(this.$data.state)
-      this.buildingList = res.buildingList;
-      this.classroomData.classroomList = res.classroomList
-      this.classroomData.total = res.total
+      this.campusList = res.campusList;
+      if(res.total === 0){
+        this.classroomData.classroomList = []
+        this.classroomData.total = 0
+      }else {
+        this.classroomData.classroomList = res.classroomList
+        this.classroomData.total = res.total
+      }
     },
     //测试方法
     test(){
@@ -375,6 +394,7 @@ export default {
         label: '揭阳校区',
       }, ],
       buildingList: [],
+      campusList:[],
       //教室数据
       classroomData:{
         classroomList: [],
@@ -382,6 +402,7 @@ export default {
       }
       }
     },
+
   //初始化刷新，此处刷新第二个，写后端应该根据pageSize，pageNum请求到教室id封装List然后通过request来请求State进行封装classroomData
   async created() {
       console.log(this.$data.state)
@@ -393,7 +414,20 @@ export default {
     //面包屑组件
     Breadcrumb
   },
-
+  //监听校区选择框属性动态加载楼宇框
+  watch: {
+    'campusValue':{
+      handler(nval, oval){
+        this.queryInfo.query = '';
+        for (let i = 0; i < this.$data.campusList.length; i++) {
+          if(nval === this.$data.campusList[i].campusId){
+            this.$data.buildingList = this.$data.campusList[i].buildingList;
+            break;
+          }
+        }
+      }
+    }
+  }
 }
 </script>
 
