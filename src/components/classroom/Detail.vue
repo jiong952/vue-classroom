@@ -214,6 +214,7 @@ export default {
   name: "Detail",
   data(){
     return {
+      rateChart:'',
       option : {
         title: {
           text: '教室学生实时状态占比',
@@ -389,7 +390,7 @@ export default {
       this.state.fire_state = true;
     },
     video(){
-      window.open("http://192.168.43.1:8081/video",'_blank') // 在新窗口打开外链接
+      window.open("http://192.168.43.23",'_blank') // 在新窗口打开外链接
     },
     //这是一个定时
     timer () {
@@ -464,7 +465,7 @@ export default {
       const chartDom = document.getElementById('main');
       const myChart = echarts.init(chartDom);
       //根据传过来的数据更新表
-      // this.drawData();
+      this.drawData();
       //设置数据
       myChart.setOption(this.option);
     },
@@ -563,12 +564,6 @@ export default {
       this.request();
     }, 2000);
 
-    // //设置表单的数值
-    // this.control_form.fan_state = this.state.web_state.ctrl_state.fan_state
-    // this.control_form.light_1 = this.state.web_state.ctrl_state.light_state.light_1 === 1;
-    // this.control_form.light_2 = this.state.web_state.ctrl_state.light_state.light_2 === 1;
-    // this.control_form.light_3 = this.state.web_state.ctrl_state.light_state.light_3 === 1;
-    // this.control_form.light_4 = this.state.web_state.ctrl_state.light_state.light_4 === 1;
   },
   //初始化刷新，此处刷新第二个，写后端应该根据pageSize，pageNum请求到教室id封装List然后通过request来请求State进行封装classroomData
   async created() {
